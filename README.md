@@ -1,4 +1,4 @@
-# DrawShare
+# DrawShare ![logo](https://github.com/Rhatalin/DrawShare/blob/master/GUI/Resources/DrawShareLogo.png "DrawShare Logo")
 
 An application that let's you share your drawing in realtime
 
