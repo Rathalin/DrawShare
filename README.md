@@ -5,7 +5,7 @@ An application that let's you share your drawing in realtime
 ## Ussage
 
 * Start the application by clicking on GUI.exe!
-* To share your drawing on the internet, you need to enable port forwarding on your router.
+* Sharing on your local network works fine, but if you want to to share your drawing over the internet, you need to enable port forwarding on your router.
   Every router interface is different but this may help you:
 
   - Protocol: TCP
