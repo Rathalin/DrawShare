@@ -278,15 +278,13 @@ namespace GUI
 
         private void InitHyperlinks()
         {
-            /*
-             * Hyperlink_Twitter.RequestNavigate += (sender, e) =>
-            {
-                System.Diagnostics.Process.Start(e.Uri.ToString());
-            };
-            */
-            Btn_Twitter.Tag = "https://twitter.com/Rhatalin";
-            Btn_Facebook.Tag = "https://www.facebook.com/daniel.flockert";
-            Btn_Instagram.Tag = "https://www.instagram.com/rhatali/";
+            string linkTwitter = "https://twitter.com/Rhatalin";
+            Btn_Twitter.Tag = linkTwitter;
+            Btn_Twitter.ToolTip = linkTwitter;
+
+            string linkInstagram = "https://github.com/Rhatalin";
+            Btn_Github.Tag = linkInstagram;
+            Btn_Github.ToolTip = linkInstagram;
 
         }
 
@@ -304,10 +302,8 @@ namespace GUI
 
             //Twitter
             Btn_Twitter.Background = ImageResource.LogoTwitter;
-            //Facebook
-            Btn_Facebook.Background = ImageResource.LogoFacebook;
-            //Instagram
-            Btn_Instagram.Background = ImageResource.LogoInstagram;
+            //Github
+            Btn_Github.Background = ImageResource.LogoGithub;
         }
 
         private void InitValues()
@@ -318,6 +314,11 @@ namespace GUI
 
             //UserCount
             UserCount = 1;
+        }
+
+        public void OpenURI(string uri)
+        {
+            System.Diagnostics.Process.Start(uri);
         }
 
         #endregion Methodes
@@ -522,7 +523,12 @@ namespace GUI
         private void Btn_SocialMedia_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            System.Diagnostics.Process.Start(btn.Tag.ToString());
+            OpenURI(btn.Tag.ToString());
+        }
+
+        private void MenuItem_ReportBug_Click(object sender, RoutedEventArgs e)
+        {
+            OpenURI(Btn_Github.Tag.ToString() + "/DrawShare/issues/new");
         }
     }
     #endregion GUI

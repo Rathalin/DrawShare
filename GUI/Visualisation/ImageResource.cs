@@ -26,6 +26,7 @@ namespace GUI.Visualisation
         public static ImageBrush LogoFacebook { get; set; } = new ImageBrush() { ImageSource = LoadBitmap(ResourcePictures.Facebook_Logo_100) };
         public static ImageBrush LogoInstagram { get; set; } = new ImageBrush() { ImageSource = LoadBitmap(ResourcePictures.Instagram_Logo_100) };
         public static ImageBrush LogoTwitter { get; set; } = new ImageBrush() { ImageSource = LoadBitmap(ResourcePictures.Twitter_Logo_100) };
+        public static ImageBrush LogoGithub { get; set; } = new ImageBrush() { ImageSource = LoadBitmap(ResourcePictures.Github_Logo_100) };
         public static ImageBrush UserCount { get; set; } = new ImageBrush() { ImageSource = LoadBitmap(ResourcePictures.User_50) };
 
 

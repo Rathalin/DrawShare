@@ -28,7 +28,8 @@
                             <MenuItem Header="Klassisch" Click="MI_Theme_Classic_Click"></MenuItem>
                             <MenuItem Header="GrünBlau" Click="MI_Theme_GreenBlue_Click"></MenuItem>
                         </MenuItem>
-                        <MenuItem Header="Restart" Click="MenuItem_Restart_Click"></MenuItem>
+                        <MenuItem Header="Neustarten" Click="MenuItem_Restart_Click"></MenuItem>
+                        <MenuItem Header="Fehler melden" Click="MenuItem_ReportBug_Click"></MenuItem>
                         <MenuItem Header="Beenden" Click="MenuItem_Close_Click"></MenuItem>
                     </MenuItem>
                     <MenuItem x:Name="MI_Share" Header="Freigeben" Click="MenuItem_Server_Click"></MenuItem>
@@ -39,9 +40,8 @@
         <DockPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <DockPanel DockPanel.Dock="Bottom">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button x:Name="Btn_Github" Style="{DynamicResource Style_Button_SocialMedia}" Click="Btn_SocialMedia_Click"></Button>
                     <Button x:Name="Btn_Twitter" Style="{DynamicResource Style_Button_SocialMedia}" Click="Btn_SocialMedia_Click"></Button>
-                    <Button x:Name="Btn_Facebook" Style="{DynamicResource Style_Button_SocialMedia}" Click="Btn_SocialMedia_Click"></Button>
-                    <Button x:Name="Btn_Instagram" Style="{DynamicResource Style_Button_SocialMedia}" Click="Btn_SocialMedia_Click"></Button>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Height="40">
                     <Button x:Name="Btn_LockDrawing" Style="{StaticResource Style_Button_ControlPanel}" Click="Btn_LockDrawing_Click"
