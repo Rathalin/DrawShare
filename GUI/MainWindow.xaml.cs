@@ -153,7 +153,7 @@ namespace GUI
                 Y2 = y2
             });
         }
- 
+
         private void DrawEllipse(Canvas target, CustomBrush brush, double x1, double y1)
         {
             Ellipse ell = new Ellipse()
@@ -181,6 +181,10 @@ namespace GUI
                 if (m as DrawData != null)
                 {
                     DrawData drawData = (DrawData)m;
+                    if (servermode)
+                    {
+                        server.SendAll(drawData);
+                    }
                     UseDispatcher(Canvas_Drawing, delegate
                     {
                         Draw(Canvas_Drawing,
@@ -212,7 +216,7 @@ namespace GUI
                     else if (m as UserCount != null)
                     {
                         UserCount userC = (UserCount)m;
-                        UserCount = userC.Count;                    
+                        UserCount = userC.Count;
                     }
                 }
             }
@@ -447,7 +451,7 @@ namespace GUI
                             {
                                 IP = dlg.IPAddress;
                                 Port = dlg.Port;
-                                Connected = true; 
+                                Connected = true;
                                 Canvas_Drawing.Children.Clear();
                                 MI_Share.IsEnabled = false;
                             });

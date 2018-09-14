@@ -40,7 +40,29 @@ namespace GUI
                         Transfer<MessageContainer> t = new Transfer<MessageContainer>(listener.AcceptTcpClient());
                         //MessageBox.Show("Client connected");
                         Transfers.Add(t);
-                        mainWindow.UseDispatcher(mainWindow.TBl_UserCount, delegate { mainWindow.TBl_UserCount.Text = (Transfers.Count + 1).ToString(); });                       
+                        mainWindow.UseDispatcher(mainWindow.TBl_UserCount, delegate { mainWindow.TBl_UserCount.Text = (Transfers.Count + 1).ToString(); });
+
+                        //Send init data
+                        List<Message> msgList = new List<Message>();
+                        mainWindow.UseDispatcher(mainWindow.Canvas_Drawing, delegate
+                        {
+                            foreach (var el in mainWindow.Canvas_Drawing.Children)
+                            {
+                                if (el as Line != null)
+                                {
+                                    Line l = (Line)el;
+                                    msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
+                                }
+                            }
+                            if (mainWindow.DrawingLocked)
+                                msgList.Add(new DrawLock());
+                            else
+                                msgList.Add(new DrawUnlock());
+                            t.Send(new MessageContainer() { Messages = msgList });
+                        });
+
+                        //Update other users
+                        SendAll(new UserCount(Transfers.Count + 1));
 
                         ThreadPool.QueueUserWorkItem(delegate
                         {
@@ -59,28 +81,6 @@ namespace GUI
                                 SendAll(new UserCount(Transfers.Count + 1));
                             }
                         });
-
-                        //Send init data
-                        List<Message> msgList = new List<Message>();
-                        mainWindow.UseDispatcher(mainWindow.Canvas_Drawing, delegate
-                        {
-                            foreach (var el in mainWindow.Canvas_Drawing.Children)
-                            {
-                                if (el as Line != null)
-                                {
-                                    Line l = (Line)el;
-                                    msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
-                                }
-                            }
-                        });
-                        if (mainWindow.DrawingLocked)
-                            msgList.Add(new DrawLock());
-                        else
-                            msgList.Add(new DrawUnlock());
-                        t.Send(new MessageContainer() { Messages = msgList });
-
-                        //Update other users
-                        SendAll(new UserCount(Transfers.Count + 1));
                     }
                 }
                 catch (SocketException)
