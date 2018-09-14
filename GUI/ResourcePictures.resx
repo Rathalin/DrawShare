@@ -166,4 +166,7 @@
   <data name="Github_Logo_100" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Github_Logo_100.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="DrawShareLogo_50" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\DrawShareLogo_50.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
