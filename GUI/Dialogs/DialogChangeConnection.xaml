@@ -1,0 +1,30 @@
+﻿<Window x:Class="GUI.Dialogs.DialogChangeConnection"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GUI.Dialogs"
+        mc:Ignorable="d" WindowStartupLocation="CenterOwner"
+        Title="Verbindung" MinHeight="130" MinWidth="250" Height="130" Width="250">
+        <Grid Style="{StaticResource Style_Grid_Opacity04}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <GroupBox Header="IP-Adresse" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBox x:Name="TB_IPAddress" MaxLength="15"></TextBox>
+            </GroupBox>
+            <GroupBox Header="Port" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
+                <TextBox x:Name="TB_Port" MaxLength="5"></TextBox>
+            </GroupBox>
+            <Button Content="Abbrechen" MinWidth="80" Click="BtnCancel_Click" Margin="0,0,0,10"
+                Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"></Button>
+            <Button Content="Verbinden" MinWidth="80" Click="BtnConnect_Click" Margin="0,0,0,10"
+                Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"></Button>
+        </Grid>
+    </Window>
+

@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{9856138D-5028-4465-8A2B-9D9C8371BC72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCommunication", "NetCommunication\NetCommunication.csproj", "{58875118-2C8A-42FC-BCF7-0A1978D18DD4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9856138D-5028-4465-8A2B-9D9C8371BC72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9856138D-5028-4465-8A2B-9D9C8371BC72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9856138D-5028-4465-8A2B-9D9C8371BC72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9856138D-5028-4465-8A2B-9D9C8371BC72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58875118-2C8A-42FC-BCF7-0A1978D18DD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58875118-2C8A-42FC-BCF7-0A1978D18DD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58875118-2C8A-42FC-BCF7-0A1978D18DD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58875118-2C8A-42FC-BCF7-0A1978D18DD4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
