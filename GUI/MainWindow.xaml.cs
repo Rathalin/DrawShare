@@ -447,7 +447,7 @@ namespace GUI
                             {
                                 IP = dlg.IPAddress;
                                 Port = dlg.Port;
-                                Connected = true;
+                                Connected = true; 
                                 Canvas_Drawing.Children.Clear();
                                 MI_Share.IsEnabled = false;
                             });
