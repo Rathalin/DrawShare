@@ -24,7 +24,7 @@ using System.Windows.Threading;
 namespace GUI
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// MainWindow for GUI
     /// </summary>
     public partial class MainWindow : Window
     {
