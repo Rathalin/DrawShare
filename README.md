@@ -4,7 +4,7 @@ DrawShare lets you connect with others so you can draw together :paintbrush:
 
 ## Idea :bulb: 
 
-The idea came to my mind when i was talking to friends online: one of them tried to explain a situation and i thought "wouldn't it be funny if he would quickly draw what happend?". I realised i didn't know an application that could do that so i started working on this little program. No matter if you plan to visually support your explanations or just want to have fun, you may want to give it a try!
+The idea came to my mind when i was talking to friends online: one of them tried to explain a situation and i thought *"wouldn't it be funny if he would quickly draw what happend?"*. I realised i didn't know an application that could do that so i started working on this little program. No matter if you plan to visually support your explanations or just want to have fun, you may want to give it a try!
 
 ## Ussage :wrench:
 
@@ -27,9 +27,9 @@ To use the program with others that are not in your local network an extra step 
 
   - Protocol: TCP
   - WAN Host IP: 0.0.0.0
-  - LAN Host IP Address: <**local** ipv4 address of your computer>
-  - WAN Port: <port>
-  - LAN Host Port: <port>
+  - LAN Host IP Address: \<**local** ipv4 address of your computer>
+  - WAN Port: \<port>
+  - LAN Host Port: \<port>
   
   If the router interface requires a range (eg. WAN Host IP Range) just type in the value twice:
   WAN Host IP Range: 0.0.0.0 ~ 0.0.0.0
