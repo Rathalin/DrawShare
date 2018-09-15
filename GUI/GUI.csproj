@@ -78,6 +78,8 @@
     <Compile Include="Dialogs\DialogConnectionInfo.xaml.cs">
       <DependentUpon>DialogConnectionInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LanguagePacks\Languages.cs" />
+    <Compile Include="LanguagePacks\Language.cs" />
     <Compile Include="ResourcePictures.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

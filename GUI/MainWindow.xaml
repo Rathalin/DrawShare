@@ -6,34 +6,39 @@
         xmlns:local="clr-namespace:GUI"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="DrawShare" ResizeMode="CanResize"
-        Height="1" Width="5" MinHeight="625" MinWidth="732">
+        Height="1" Width="5" MinHeight="625" MinWidth="732"
+        Closing="Window_Closing">
     <DockPanel Style="{DynamicResource Style_DockPanel_Opacity04}">
         <Border DockPanel.Dock="Top">
             <DockPanel>
                 <StackPanel x:Name="SP_Status" DockPanel.Dock="Right" Orientation="Horizontal">
                     <Label x:Name="Label_UserCount" Width="20"></Label>
                     <TextBlock x:Name="TBl_UserCount" Style="{DynamicResource Style_TextBlock_Menu}"></TextBlock>
-                    <TextBlock Text="IP:" FontWeight="SemiBold" Margin="5,0,5,0" DockPanel.Dock="Right" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock x:Name="TBl_IP" Text="IP:" FontWeight="SemiBold" Margin="5,0,5,0" DockPanel.Dock="Right" VerticalAlignment="Center"></TextBlock>
                     <TextBlock x:Name="TBl_Info_IP" Margin="5,0,5,0" DockPanel.Dock="Right" VerticalAlignment="Center"></TextBlock>
-                    <TextBlock Text="Port:" FontWeight="SemiBold" DockPanel.Dock="Right" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock x:Name="TBl_Port" Text="Port:" FontWeight="SemiBold" DockPanel.Dock="Right" VerticalAlignment="Center"></TextBlock>
                     <TextBlock x:Name="TBl_Info_Port" Margin="5,0,5,0" DockPanel.Dock="Right" VerticalAlignment="Center"></TextBlock>
-                    <TextBlock x:Name="TBl_ConnectionStatus" Text="Getrennt" FontWeight="Bold" Width="70" Margin="5,0,5,0" VerticalAlignment="Center" TextAlignment="Center"></TextBlock>
+                    <TextBlock x:Name="TBl_ConnectionStatus" Text="Disconnected" FontWeight="Bold" MinWidth="50" Margin="5,0,5,0" VerticalAlignment="Center" TextAlignment="Center"></TextBlock>
                     <Grid Width="20" Height="20" Margin="5,0,5,0" VerticalAlignment="Center">
                         <Border x:Name="B_ConnectionStatus" Width="15" Height="15" CornerRadius="20" Background="Red" VerticalAlignment="Center" HorizontalAlignment="Center"></Border>
                     </Grid>
                 </StackPanel>
                 <Menu Background="Transparent">
-                    <MenuItem Header="Menu">
-                        <MenuItem Header="Theme">
-                            <MenuItem Header="Klassisch" Click="MI_Theme_Classic_Click"></MenuItem>
-                            <MenuItem Header="GrünBlau" Click="MI_Theme_GreenBlue_Click"></MenuItem>
+                    <MenuItem x:Name="MI_Menu" Header="Menu">
+                        <MenuItem x:Name="MI_Theme" Header="Theme">
+                            <MenuItem x:Name="MI_Theme_Classic" Header="Classic" Click="MI_Theme_Classic_Click"></MenuItem>
+                            <MenuItem x:Name="MI_Theme_GreenBlue" Header="GreenBlue" Click="MI_Theme_GreenBlue_Click"></MenuItem>
                         </MenuItem>
-                        <MenuItem Header="Neustarten" Click="MenuItem_Restart_Click"></MenuItem>
-                        <MenuItem Header="Fehler melden" Click="MenuItem_ReportBug_Click"></MenuItem>
-                        <MenuItem Header="Beenden" Click="MenuItem_Close_Click"></MenuItem>
+                        <MenuItem x:Name="MI_Language" Header="Language">
+                            <MenuItem x:Name="MI_Language_English" Header="Engish" Click="MI_Language_English_Click"></MenuItem>
+                            <MenuItem x:Name="MI_Language_German" Header="German" Click="MI_Language_German_Click"></MenuItem>
+                        </MenuItem>
+                        <MenuItem x:Name="MI_ReportBug" Header="Report a Bug" Click="MenuItem_ReportBug_Click"></MenuItem>
+                        <MenuItem x:Name="MI_Restart" Header="Restart" Click="MenuItem_Restart_Click"></MenuItem>
+                        <MenuItem x:Name="MI_Exit" Header="Exit" Click="MenuItem_Exit_Click"></MenuItem>
                     </MenuItem>
-                    <MenuItem x:Name="MI_Share" Header="Freigeben" Click="MenuItem_Server_Click"></MenuItem>
-                    <MenuItem x:Name="MI_Connect" Header="Beitreten" Click="MenuItem_Client_Click"></MenuItem>
+                    <MenuItem x:Name="MI_Share" Header="Share" Click="MenuItem_Share_Click"></MenuItem>
+                    <MenuItem x:Name="MI_Join" Header="Join" Click="MenuItem_Join_Click"></MenuItem>
                 </Menu>
             </DockPanel>
         </Border>
@@ -44,8 +49,7 @@
                     <Button x:Name="Btn_Twitter" Style="{DynamicResource Style_Button_SocialMedia}" Click="Btn_SocialMedia_Click"></Button>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Height="40">
-                    <Button x:Name="Btn_LockDrawing" Style="{StaticResource Style_Button_ControlPanel}" Click="Btn_LockDrawing_Click"
-                            ToolTip="Für andere die Künstlerfläche (ent)sperren"></Button>
+                    <Button x:Name="Btn_LockDrawing" Style="{StaticResource Style_Button_ControlPanel}" Click="Btn_LockDrawing_Click"></Button>
                     <TextBlock x:Name="TBl_ControlPanel" Style="{DynamicResource Style_TextBlock_ControlPanel}"></TextBlock>
                 </StackPanel>
             </DockPanel>
@@ -102,7 +106,7 @@
                         <Button Background="SaddleBrown" Click="Btn_ColorPicker_Click" Style="{DynamicResource Style_Button_PaintPanelColor}"></Button>
                     </UniformGrid>
                     <Button x:Name="Btn_Clear" Click="Btn_Clear_Click" Style="{DynamicResource Style_Button_PaintPanel}"
-                            ToolTip="Das Kunstwerk verwerfen">
+                            ToolTip="Discard the drawing">
                     </Button>
                 </StackPanel>
             </StackPanel>

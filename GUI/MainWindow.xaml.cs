@@ -1,4 +1,5 @@
 ﻿using GUI.Dialogs;
+using GUI.LanguagePacks;
 using GUI.Visualisation;
 using NetCommunication;
 using NetCommunication.MessageTypes;
@@ -37,6 +38,7 @@ namespace GUI
             InitHyperlinks();
             InitImages();
             InitValues();
+            TranslationLanguage = Languages.English;
         }
 
         #endregion Constructors
@@ -108,15 +110,15 @@ namespace GUI
                 {
                     if (value)
                     {
-                        TBl_ConnectionStatus.Text = "Verbunden";
+                        TBl_ConnectionStatus.Text = TranslationLanguage.Connection_Status_Connected;
                         B_ConnectionStatus.Background = Brushes.Green;
-                        MI_Connect.IsEnabled = false;
+                        MI_Join.IsEnabled = false;
                     }
                     else
                     {
-                        TBl_ConnectionStatus.Text = "Getrennt";
+                        TBl_ConnectionStatus.Text = TranslationLanguage.Connection_Status_Disconnected;
                         B_ConnectionStatus.Background = Brushes.Red;
-                        MI_Connect.IsEnabled = true;
+                        MI_Join.IsEnabled = true;
                     }
                 });
                 _connected = value;
@@ -134,6 +136,39 @@ namespace GUI
                     TBl_UserCount.Text = value.ToString();
                 });
                 _userCount = value;
+            }
+        }
+
+        private Language _translationLanguage;
+        public Language TranslationLanguage
+        {
+            get { return _translationLanguage; }
+            private set
+            {
+                if (_translationLanguage != value)
+                {
+                    _translationLanguage = value;
+                    UseDispatcher(this, delegate
+                    {
+                        MI_Menu.Header = _translationLanguage.MenuBar_Menu;
+                        MI_Theme.Header = _translationLanguage.MenuBar_Menu_Theme;
+                        MI_Theme_Classic.Header = _translationLanguage.MenuBar_Menu_Theme_Classic;
+                        MI_Theme_GreenBlue.Header = _translationLanguage.MenuBar_Menu_Theme_GreenBlue;
+                        MI_Language.Header = _translationLanguage.MenuBar_Language;
+                        MI_Language_English.Header = _translationLanguage.MenuBar_Language_English;
+                        MI_Language_German.Header = _translationLanguage.MenuBar_Language_German;
+                        MI_ReportBug.Header = _translationLanguage.MenuBar_Menu_ReportBug;
+                        MI_Restart.Header = _translationLanguage.MenuBar_Menu_Restart;
+                        MI_Exit.Header = _translationLanguage.MenuBar_Menu_Exit;
+                        MI_Share.Header = _translationLanguage.MenuBar_Share;
+                        MI_Join.Header = _translationLanguage.MenuBar_Join;
+                        TBl_IP.Text = _translationLanguage.Connection_TBl_IP;
+                        TBl_Port.Text = _translationLanguage.Connection_TBl_Port;
+                        TBl_ConnectionStatus.Text = _translationLanguage.Connection_Status_Disconnected;
+                        Btn_Clear.ToolTip = _translationLanguage.PaintMenu_Clear_Tooltip;
+                        Btn_LockDrawing.ToolTip = _translationLanguage.ControlMenu_Lock_Tooltip;
+                    });
+                }
             }
         }
 
@@ -425,13 +460,13 @@ namespace GUI
             Application.Current.Shutdown();
         }
 
-        private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
 
-        private void MenuItem_Client_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_Join_Click(object sender, RoutedEventArgs e)
         {
             if (server == null && client == null)
             {
@@ -467,7 +502,7 @@ namespace GUI
             }
         }
 
-        private void MenuItem_Server_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_Share_Click(object sender, RoutedEventArgs e)
         {
             int port = 59595;
             if (client == null)
@@ -499,6 +534,15 @@ namespace GUI
             SetTheme(Colors.LightGreen, Colors.LightBlue, Colors.Green, Colors.DarkBlue);
         }
 
+        private void MI_Language_English_Click(object sender, RoutedEventArgs e)
+        {
+            TranslationLanguage = Languages.English;
+        }
+
+        private void MI_Language_German_Click(object sender, RoutedEventArgs e)
+        {
+            TranslationLanguage = Languages.German;
+        }
 
         private void MI_Debug_Click(object sender, RoutedEventArgs e)
         {
@@ -529,6 +573,14 @@ namespace GUI
         private void MenuItem_ReportBug_Click(object sender, RoutedEventArgs e)
         {
             OpenURI(Btn_Github.Tag.ToString() + "/DrawShare/issues/new");
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (MessageBox.Show(TranslationLanguage.ExitDlg_Text, TranslationLanguage.ExitDlg_Caption, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+            }
         }
     }
     #endregion GUI
