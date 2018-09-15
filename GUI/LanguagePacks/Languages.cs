@@ -11,6 +11,13 @@ namespace GUI.LanguagePacks
 
         public static Language English = new Language()
         {
+            General_Cancel = "Cancel",
+            General_Close = "Close",
+            General_Connect = "Connect",
+            General_Connection = "Connection",
+            General_IP = "IP",
+            General_Port = "Port",
+
             MenuBar_Menu = "Menu",
 
             MenuBar_Menu_Theme = "Theme",
@@ -37,6 +44,9 @@ namespace GUI.LanguagePacks
             PaintMenu_Clear_Tooltip = "Clear the drawing board",
             
             ControlMenu_Lock_Tooltip = "(Un)lock the drawing board for others",
+            ControlMenu_Lock_Text = "The host has locked the drawing board for others!",
+            
+            Dialog_ConnectionInfo_Infotext = "Others can connect to you by using this data",
 
             ExitDlg_Text = "Do you really want to exit?",
             ExitDlg_Caption = "Exit"
@@ -44,6 +54,13 @@ namespace GUI.LanguagePacks
 
         public static Language German = new Language()
         {
+            General_Cancel = "Abbrechen",
+            General_Close = "Schließen",
+            General_Connect = "Verbinden",
+            General_Connection = "Verbindung",
+            General_IP = "IP-Adresse",
+            General_Port = "Port",
+
             MenuBar_Menu = "Menü",
 
             MenuBar_Menu_Theme = "Design",
@@ -70,6 +87,9 @@ namespace GUI.LanguagePacks
             PaintMenu_Clear_Tooltip = "Das Kunstwerk verwerfen",
 
             ControlMenu_Lock_Tooltip = "Für andere die Künstlerfläche (ent)sperren",
+            ControlMenu_Lock_Text = "Der Host hat das Zeichenbrett für andere gesperrt!",
+            
+            Dialog_ConnectionInfo_Infotext = "Mit diesen Daten können sich andere mit dir verbinden.",
 
             ExitDlg_Text = "Wirklich beenden?",
             ExitDlg_Caption = "Beenden"

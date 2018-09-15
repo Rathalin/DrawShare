@@ -8,7 +8,17 @@ namespace GUI.LanguagePacks
 {
     public class Language
     {
+        #region General
+        public string General_Cancel { get; set; }
+        public string General_Close { get; set; }
+        public string General_Connect { get; set; }
+        public string General_Connection { get; set; }
+        public string General_IP { get; set; }
+        public string General_Port { get; set; }
+        #endregion General
+
         #region MenuBar
+
         #region MenuBar Menu
         public string MenuBar_Menu { get; set; }
 
@@ -32,6 +42,7 @@ namespace GUI.LanguagePacks
         #region MenuBar Join
         public string MenuBar_Join { get; set; }
         #endregion MenuBar Join
+
         #endregion MenuBar
 
         #region Connection
@@ -47,7 +58,16 @@ namespace GUI.LanguagePacks
 
         #region ControlMenu
         public string ControlMenu_Lock_Tooltip { get; set; }
+        public string ControlMenu_Lock_Text { get; set; }
         #endregion ControlMenu
+
+        #region Dialogs
+
+        #region Dialog ConnectionInfo
+        public string Dialog_ConnectionInfo_Infotext { get; set; }
+        #endregion Dialog ConnectionInfo
+
+        #endregion Dialogs
 
         #region ExitDialog
         public string ExitDlg_Text { get; set; }

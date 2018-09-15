@@ -24,19 +24,18 @@ namespace GUI.Dialogs
             InitializeComponent();
         }
 
-        public DialogConnectionInfo(string infotext, string ipaddress, int port) : this()
-        {
-            TBl_Info.Text = infotext;
-            TBl_IPAddress.Text = ipaddress;
-            TBl_Port.Text = port.ToString();
-        }
-
-        public DialogConnectionInfo(string title, string infotext, string ipaddress, int port) : this(infotext, ipaddress, port)
+        public DialogConnectionInfo(string title, string infoText, string ipLabel, string ipaddress, string portLabel, int port, string closeText) : this()
         {
             Title = title;
+            TBl_Info.Text = infoText;
+            GroupBox_IP.Header = ipLabel;
+            TBl_IPAddress.Text = ipaddress;
+            GroupBox_Port.Header = portLabel;
+            TBl_Port.Text = port.ToString();
+            Btn_Close.Content = closeText;
         }
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        private void Btn_Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }

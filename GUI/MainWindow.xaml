@@ -105,8 +105,7 @@
                         <Button Background="Peru" Click="Btn_ColorPicker_Click" Style="{DynamicResource Style_Button_PaintPanelColor}"></Button>
                         <Button Background="SaddleBrown" Click="Btn_ColorPicker_Click" Style="{DynamicResource Style_Button_PaintPanelColor}"></Button>
                     </UniformGrid>
-                    <Button x:Name="Btn_Clear" Click="Btn_Clear_Click" Style="{DynamicResource Style_Button_PaintPanel}"
-                            ToolTip="Discard the drawing">
+                    <Button x:Name="Btn_Clear" Click="Btn_Clear_Click" Style="{DynamicResource Style_Button_PaintPanel}">
                     </Button>
                 </StackPanel>
             </StackPanel>

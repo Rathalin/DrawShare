@@ -38,7 +38,7 @@ namespace GUI
             InitHyperlinks();
             InitImages();
             InitValues();
-            TranslationLanguage = Languages.English;
+            Translation = Languages.English;
         }
 
         #endregion Constructors
@@ -110,13 +110,13 @@ namespace GUI
                 {
                     if (value)
                     {
-                        TBl_ConnectionStatus.Text = TranslationLanguage.Connection_Status_Connected;
+                        TBl_ConnectionStatus.Text = Translation.Connection_Status_Connected;
                         B_ConnectionStatus.Background = Brushes.Green;
                         MI_Join.IsEnabled = false;
                     }
                     else
                     {
-                        TBl_ConnectionStatus.Text = TranslationLanguage.Connection_Status_Disconnected;
+                        TBl_ConnectionStatus.Text = Translation.Connection_Status_Disconnected;
                         B_ConnectionStatus.Background = Brushes.Red;
                         MI_Join.IsEnabled = true;
                     }
@@ -139,34 +139,34 @@ namespace GUI
             }
         }
 
-        private Language _translationLanguage;
-        public Language TranslationLanguage
+        private Language _Translation;
+        public Language Translation
         {
-            get { return _translationLanguage; }
+            get { return _Translation; }
             private set
             {
-                if (_translationLanguage != value)
+                if (_Translation != value)
                 {
-                    _translationLanguage = value;
+                    _Translation = value;
                     UseDispatcher(this, delegate
                     {
-                        MI_Menu.Header = _translationLanguage.MenuBar_Menu;
-                        MI_Theme.Header = _translationLanguage.MenuBar_Menu_Theme;
-                        MI_Theme_Classic.Header = _translationLanguage.MenuBar_Menu_Theme_Classic;
-                        MI_Theme_GreenBlue.Header = _translationLanguage.MenuBar_Menu_Theme_GreenBlue;
-                        MI_Language.Header = _translationLanguage.MenuBar_Language;
-                        MI_Language_English.Header = _translationLanguage.MenuBar_Language_English;
-                        MI_Language_German.Header = _translationLanguage.MenuBar_Language_German;
-                        MI_ReportBug.Header = _translationLanguage.MenuBar_Menu_ReportBug;
-                        MI_Restart.Header = _translationLanguage.MenuBar_Menu_Restart;
-                        MI_Exit.Header = _translationLanguage.MenuBar_Menu_Exit;
-                        MI_Share.Header = _translationLanguage.MenuBar_Share;
-                        MI_Join.Header = _translationLanguage.MenuBar_Join;
-                        TBl_IP.Text = _translationLanguage.Connection_TBl_IP;
-                        TBl_Port.Text = _translationLanguage.Connection_TBl_Port;
-                        TBl_ConnectionStatus.Text = _translationLanguage.Connection_Status_Disconnected;
-                        Btn_Clear.ToolTip = _translationLanguage.PaintMenu_Clear_Tooltip;
-                        Btn_LockDrawing.ToolTip = _translationLanguage.ControlMenu_Lock_Tooltip;
+                        MI_Menu.Header = _Translation.MenuBar_Menu;
+                        MI_Theme.Header = _Translation.MenuBar_Menu_Theme;
+                        MI_Theme_Classic.Header = _Translation.MenuBar_Menu_Theme_Classic;
+                        MI_Theme_GreenBlue.Header = _Translation.MenuBar_Menu_Theme_GreenBlue;
+                        MI_Language.Header = _Translation.MenuBar_Language;
+                        MI_Language_English.Header = _Translation.MenuBar_Language_English;
+                        MI_Language_German.Header = _Translation.MenuBar_Language_German;
+                        MI_ReportBug.Header = _Translation.MenuBar_Menu_ReportBug;
+                        MI_Restart.Header = _Translation.MenuBar_Menu_Restart;
+                        MI_Exit.Header = _Translation.MenuBar_Menu_Exit;
+                        MI_Share.Header = _Translation.MenuBar_Share;
+                        MI_Join.Header = _Translation.MenuBar_Join;
+                        TBl_IP.Text = _Translation.Connection_TBl_IP;
+                        TBl_Port.Text = _Translation.Connection_TBl_Port;
+                        TBl_ConnectionStatus.Text = _Translation.Connection_Status_Disconnected;
+                        Btn_Clear.ToolTip = _Translation.PaintMenu_Clear_Tooltip;
+                        Btn_LockDrawing.ToolTip = _Translation.ControlMenu_Lock_Tooltip;
                     });
                 }
             }
@@ -240,7 +240,7 @@ namespace GUI
                     {
                         DrawingLocked = true;
                         UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = false; });
-                        UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = "Der Host hat das Zeichenbrett gesperrt!"; });
+                        UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = Translation.ControlMenu_Lock_Text; });
                     }
                     else if (m as DrawUnlock != null)
                     {
@@ -471,11 +471,12 @@ namespace GUI
             if (server == null && client == null)
             {
                 servermode = false;
-                DialogChangeConnection dlg = new DialogChangeConnection("10.0.0.1", 59595);
+                DialogChangeConnection dlg = new DialogChangeConnection(
+                    Translation.General_Connection, Translation.General_IP, "10.0.0.1",
+                    Translation.General_Port, 59595, Translation.General_Cancel, Translation.General_Connect);
                 dlg.Owner = this;
                 if (dlg.ShowDialog() == true)
                 {
-                    Title = "DrawShare Client";
                     client = new Client(this, dlg.IPAddress, dlg.Port);
                     ThreadPool.QueueUserWorkItem(delegate
                     {
@@ -510,7 +511,6 @@ namespace GUI
                 servermode = true;
                 if (server == null)
                 {
-                    Title = "DrawShare Server";
                     server = new Server(this, port);
                     server.Listen();
                     Connected = true;
@@ -518,7 +518,9 @@ namespace GUI
                 }
                 IP = GetGlobalIPAddress();
                 Port = port;
-                DialogConnectionInfo dlg = new DialogConnectionInfo("Mit diesen Daten können sich andere mit dir verbinden.", IP, Port);
+                DialogConnectionInfo dlg = new DialogConnectionInfo(
+                    Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
+                    Translation.General_IP, IP, Translation.General_Port, Port, Translation.General_Close);
                 dlg.Owner = this;
                 dlg.Show();
             }
@@ -536,12 +538,12 @@ namespace GUI
 
         private void MI_Language_English_Click(object sender, RoutedEventArgs e)
         {
-            TranslationLanguage = Languages.English;
+            Translation = Languages.English;
         }
 
         private void MI_Language_German_Click(object sender, RoutedEventArgs e)
         {
-            TranslationLanguage = Languages.German;
+            Translation = Languages.German;
         }
 
         private void MI_Debug_Click(object sender, RoutedEventArgs e)
@@ -577,7 +579,7 @@ namespace GUI
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (MessageBox.Show(TranslationLanguage.ExitDlg_Text, TranslationLanguage.ExitDlg_Caption, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.No)
+            if (MessageBox.Show(Translation.ExitDlg_Text, Translation.ExitDlg_Caption, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.No)
             {
                 e.Cancel = true;
             }

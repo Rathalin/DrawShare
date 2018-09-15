@@ -25,11 +25,15 @@ namespace GUI.Dialogs
             InitializeComponent();
         }
 
-        public DialogChangeConnection(string ip, int port)
+        public DialogChangeConnection(string title, string ipLabel, string ip, string portLabel, int port, string cancelText, string connectText) : this()
         {
-            InitializeComponent();
+            Title = title;
+            GroupBox_IP.Header = ipLabel;
             TB_IPAddress.Text = ip;
+            GroupBox_Port.Header = portLabel;
             TB_Port.Text = port.ToString();
+            Btn_Cancel.Content = cancelText;
+            Btn_Connect.Content = connectText;
         }
 
 
@@ -37,13 +41,13 @@ namespace GUI.Dialogs
         public int Port { get; private set; }
 
 
-        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
             Close();
         }
 
-        private void BtnConnect_Click(object sender, RoutedEventArgs e)
+        private void Btn_Connect_Click(object sender, RoutedEventArgs e)
         {
             Regex RegexIP = new Regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.)" +
                 "{3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
