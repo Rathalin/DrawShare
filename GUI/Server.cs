@@ -22,72 +22,68 @@ namespace GUI
             MessageReceived += mainWindow.MessageReceived;
         }
 
-        public Server(MainWindow mainwindow, int port) : this(mainwindow)
+        public bool TryPort(int port)
         {
-            this.port = port;
+            try
+            {
+                Listener = new TcpListener(IPAddress.Any, port);
+                Listener.Start();
+            }
+            catch (SocketException)
+            {
+                return false;
+            }
+            return true;
         }
 
-        public void Listen()
+        public void Receive()
         {
-            ThreadPool.QueueUserWorkItem(delegate
+            while (true)
             {
-                try
+                Transfer<MessageContainer> t = new Transfer<MessageContainer>(Listener.AcceptTcpClient());
+                //MessageBox.Show("Client connected");
+                Transfers.Add(t);
+                mainWindow.UseDispatcher(mainWindow.TBl_UserCount, delegate { mainWindow.TBl_UserCount.Text = (Transfers.Count + 1).ToString(); });
+                List<Message> msgList = new List<Message>();
+                mainWindow.UseDispatcher(mainWindow.Canvas_Drawing, delegate
                 {
-                    TcpListener listener = new TcpListener(IPAddress.Any, port);
-                    listener.Start();
-                    while (true)
+                        //Send init data (all in this thread to avoid race conditions)
+                        foreach (var el in mainWindow.Canvas_Drawing.Children)
                     {
-                        Transfer<MessageContainer> t = new Transfer<MessageContainer>(listener.AcceptTcpClient());
-                        //MessageBox.Show("Client connected");
-                        Transfers.Add(t);
-                        mainWindow.UseDispatcher(mainWindow.TBl_UserCount, delegate { mainWindow.TBl_UserCount.Text = (Transfers.Count + 1).ToString(); });
-
-                        //Send init data
-                        List<Message> msgList = new List<Message>();
-                        mainWindow.UseDispatcher(mainWindow.Canvas_Drawing, delegate
+                        if (el as Line != null)
                         {
-                            foreach (var el in mainWindow.Canvas_Drawing.Children)
-                            {
-                                if (el as Line != null)
-                                {
-                                    Line l = (Line)el;
-                                    msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
-                                }
-                            }
-                            if (mainWindow.DrawingLocked)
-                                msgList.Add(new DrawLock());
-                            else
-                                msgList.Add(new DrawUnlock());
-                            t.Send(new MessageContainer() { Messages = msgList });
-                        });
+                            Line l = (Line)el;
+                            msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
+                        }
+                    }
+                    if (mainWindow.DrawingLocked)
+                        msgList.Add(new DrawLock());
+                    else
+                        msgList.Add(new DrawUnlock());
+                    t.Send(new MessageContainer() { Messages = msgList });
 
                         //Update other users
                         SendAll(new UserCount(Transfers.Count + 1));
+                });
 
-                        ThreadPool.QueueUserWorkItem(delegate
-                        {
-                            try
-                            {
-                                while (true)
-                                {
-                                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(t.Receive()));
-                                }
-                            }
-                            catch (IOException)
-                            {
-                                //MessageBox.Show("Client disconnected");
-                                Transfers.Remove(t);
-                                mainWindow.UserCount = Transfers.Count + 1;
-                                SendAll(new UserCount(Transfers.Count + 1));
-                            }
-                        });
-                    }
-                }
-                catch (SocketException)
+                ThreadPool.QueueUserWorkItem(delegate
                 {
-                    Console.WriteLine("Client disconnected!");
-                }
-            });
+                    try
+                    {
+                        while (true)
+                        {
+                            MessageReceived?.Invoke(null, new MessageReceivedEventArgs(t.Receive()));
+                        }
+                    }
+                    catch (IOException)
+                    {
+                            //MessageBox.Show("Client disconnected");
+                            Transfers.Remove(t);
+                        mainWindow.UserCount = Transfers.Count + 1;
+                        SendAll(new UserCount(Transfers.Count + 1));
+                    }
+                });
+            }
         }
 
         public void Send(Transfer<MessageContainer> transfer, MessageContainer msgc)
@@ -120,7 +116,7 @@ namespace GUI
                 t.Send(new MessageContainer() { Messages = new List<Message>() { msg } });
         }
 
-        public int port { get; set; }
+        public TcpListener Listener { get; set; }
         public List<Transfer<MessageContainer>> Transfers { get; set; } = new List<Transfer<MessageContainer>>();
         public event MessageReceivedEventHandler MessageReceived;
         private MainWindow mainWindow;

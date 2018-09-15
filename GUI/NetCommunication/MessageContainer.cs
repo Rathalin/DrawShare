@@ -20,6 +20,11 @@ namespace GUI.NetCommunication
             Messages = messages;
         }
 
+        public MessageContainer(Message msg)
+        {
+            Messages = new List<Message>() { msg };
+        }
+
         [XmlElement(typeof(TestMessage), ElementName = "TestMessage")]
         [XmlElement(typeof(DrawData), ElementName = "DrawData")]
         [XmlElement(typeof(DrawClear), ElementName = "DrawClear")]

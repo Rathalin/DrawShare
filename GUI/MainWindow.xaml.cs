@@ -39,6 +39,7 @@ namespace GUI
             InitImages();
             InitValues();
             Translation = Languages.English;
+            ToolTipService.SetShowOnDisabled(Btn_LockDrawing, true);
         }
 
         #endregion Constructors
@@ -48,13 +49,14 @@ namespace GUI
         private Server server;
         private Client client;
         private bool servermode;
+        private int startport = 50000;
 
         private CustomBrush CustomBrush = new CustomBrush(Brushes.Black, 1);
 
         private bool mouseDrawing = false;
         private Point mouseLastPosition;
 
-        private bool _drawingLocked = true;
+        private bool _drawingLocked;
         public bool DrawingLocked
         {
             get { return _drawingLocked; }
@@ -344,8 +346,7 @@ namespace GUI
         private void InitValues()
         {
             //Lock
-            DrawingLocked = true;
-            Btn_LockDrawing.IsEnabled = false;
+            DrawingLocked = false;
 
             //UserCount
             UserCount = 1;
@@ -471,21 +472,22 @@ namespace GUI
             if (server == null && client == null)
             {
                 servermode = false;
+                Btn_LockDrawing.IsEnabled = false;
                 DialogChangeConnection dlg = new DialogChangeConnection(
                     Translation.General_Connection, Translation.General_IP, "10.0.0.1",
-                    Translation.General_Port, 59595, Translation.General_Cancel, Translation.General_Connect);
+                    Translation.General_Port, startport, Translation.General_Cancel, Translation.General_Connect);
                 dlg.Owner = this;
                 if (dlg.ShowDialog() == true)
                 {
                     client = new Client(this, dlg.IPAddress, dlg.Port);
                     ThreadPool.QueueUserWorkItem(delegate
                     {
-                        bool connected = client.TryConnect();
-                        if (connected)
+                        if (client.TryConnect())
                         {
-                            client.Connect();
+                            ThreadPool.QueueUserWorkItem(delegate { client.Connect(); });
                             UseDispatcher(this, delegate
                             {
+                                Title = "DrawShare - Client";
                                 IP = dlg.IPAddress;
                                 Port = dlg.Port;
                                 Connected = true;
@@ -498,7 +500,7 @@ namespace GUI
                             UseDispatcher(this, delegate
                             {
                                 MessageBox.Show(this, Translation.Dialog_ConnectionError_ErrorMsg, Translation.General_Error,
-                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.No, MessageBoxOptions.RightAlign);
+                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.No, MessageBoxOptions.None);
                             });
                             client = null;
                         }
@@ -509,14 +511,22 @@ namespace GUI
 
         private void MenuItem_Share_Click(object sender, RoutedEventArgs e)
         {
-            int port = 59595;
+            int port = startport;
             if (client == null)
             {
+                Title = "DrawShare - Server";
                 servermode = true;
                 if (server == null)
                 {
-                    server = new Server(this, port);
-                    server.Listen();
+                    server = new Server(this);
+                    while (!server.TryPort(port))
+                    {
+                        if (port >= 65535)
+                            port = 55550;
+                        else
+                            port++;
+                    }
+                    ThreadPool.QueueUserWorkItem(delegate { server.Receive(); });
                     Connected = true;
                     Btn_LockDrawing.IsEnabled = true;
                 }
@@ -583,10 +593,13 @@ namespace GUI
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (MessageBox.Show(Translation.ExitDlg_Text, Translation.ExitDlg_Caption, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.No)
+            /*
+            if (MessageBox.Show(this, Translation.ExitDlg_Text, Translation.ExitDlg_Caption, MessageBoxButton.YesNo,
+                MessageBoxImage.Question, MessageBoxResult.No, MessageBoxOptions.None) == MessageBoxResult.No)
             {
                 e.Cancel = true;
             }
+            */
         }
     }
     #endregion GUI

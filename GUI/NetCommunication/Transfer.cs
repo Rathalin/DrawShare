@@ -13,12 +13,12 @@ namespace GUI.NetCommunication
     {
         public Transfer(TcpClient client)
         {
-            Client = client;
+            TcpClient = client;
             writer = new StreamWriter(client.GetStream());
             reader = new StreamReader(client.GetStream());
         }
 
-        public TcpClient Client { get; set; }
+        public TcpClient TcpClient { get; set; }
         private XmlSerializer xmlS = new XmlSerializer(typeof(T));
         private StreamWriter writer;
         private StreamReader reader;

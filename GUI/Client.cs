@@ -40,34 +40,28 @@ namespace GUI
 
         public void Connect()
         {
-            ThreadPool.QueueUserWorkItem(delegate
+            try
             {
-                try
+                while (transfer.TcpClient.Connected)
                 {
-                    while (transfer.Client.Connected)
+                    try
                     {
-                        try
-                        {
-                            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(transfer.Receive()));
-                        }
-                        catch (IOException)
-                        {
-                            Console.WriteLine("Server disconnected!");
-                            mainWindow.Connected = false;
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            Console.WriteLine("Server disconnedted???");
-                            mainWindow.Connected = false;
-                        }
+                        MessageReceived?.Invoke(null, new MessageReceivedEventArgs(transfer.Receive()));
+                    }
+                    catch (IOException)
+                    {
+                        OnServerDisconnect();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        Console.WriteLine("Server disconnedted???");
                     }
                 }
-                catch (SocketException)
-                {
-                    Console.WriteLine("Server disconnected!");
-                    mainWindow.Connected = false;
-                }
-            });
+            }
+            catch (SocketException)
+            {
+                OnServerDisconnect();
+            }
         }
 
         public void Send(MessageContainer msgc)
@@ -78,14 +72,27 @@ namespace GUI
             }
             catch (IOException)
             {
-                Console.WriteLine("Server disconnected!");
-                mainWindow.Connected = false;
+                OnServerDisconnect();
             }
         }
 
         public void Send(Message msg)
         {
             Send(new MessageContainer() { Messages = new List<Message>() { msg } });
+        }
+
+        private void OnServerDisconnect()
+        {
+            Console.WriteLine("Server disconnected!");
+            MessageReceived?.Invoke(null, new MessageReceivedEventArgs(new MessageContainer(new DrawUnlock())));
+            mainWindow.Connected = false;
+            mainWindow.UserCount = 1;
+            mainWindow.IP = "";
+            mainWindow.UseDispatcher(mainWindow, delegate
+            {
+                mainWindow.TBl_Info_Port.Text = "";
+                mainWindow.Btn_LockDrawing.IsEnabled = true;
+            });
         }
 
         private string ip;
