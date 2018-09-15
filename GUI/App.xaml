@@ -103,7 +103,7 @@
             <Setter Property="Height" Value="50"></Setter>
             <Setter Property="Template" Value="{DynamicResource ControlTemplate_Button_ControlPanel}"></Setter>
         </Style>
-        
+
         <Style x:Key="Style_Button_PaintPanelColor" TargetType="Button">
             <Setter Property="Background" Value="Transparent"></Setter>
             <Setter Property="Template" Value="{DynamicResource ControlTemplate_Button_ControlPanel}"></Setter>
@@ -129,7 +129,7 @@
         </Style>
 
         <!-- Template Button -->
-        
+
         <ControlTemplate x:Key="ControlTemplate_Button_ControlPanel" TargetType="Button">
             <Border Name="border" BorderThickness="1" BorderBrush="Gray" Background="{TemplateBinding Background}">
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -152,8 +152,6 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <!-- TextBlock FontWeight="Bold" Width="70" Margin="5,0,5,0" VerticalAlignment="Center" TextAlignment="Center"-->
-
         <Style x:Key="Style_TextBlock_ControlPanel" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center"></Setter>
             <Setter Property="VerticalAlignment" Value="Center"></Setter>
@@ -170,6 +168,6 @@
             <Setter Property="FontWeight" Value="Bold"></Setter>
             <Setter Property="Foreground" Value="DarkBlue"></Setter>
         </Style>
-
+        
     </Application.Resources>
 </Application>

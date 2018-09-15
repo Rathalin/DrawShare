@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GUI.Visualisation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,14 +23,17 @@ namespace GUI.Dialogs
         public DialogConnectionInfo()
         {
             InitializeComponent();
+            Icon = ImageResource.DrawShareLogo1;
         }
 
-        public DialogConnectionInfo(string title, string infoText, string ipLabel, string ipaddress, string portLabel, int port, string closeText) : this()
+        public DialogConnectionInfo(string title, string infoText, string ipLabel, string ipaddressLocal, string ipaddressGlobal, string portLabel, int port, string closeText) : this()
         {
             Title = title;
             TBl_Info.Text = infoText;
-            GroupBox_IP.Header = ipLabel;
-            TBl_IPAddress.Text = ipaddress;
+            GroupBox_IP_Local.Header = ipLabel + " (local)";
+            GroupBox_IP_Global.Header = ipLabel + " (global)";
+            TBl_IPAddress_Local.Text = ipaddressLocal;
+            TBl_IPAddress_Global.Text = ipaddressGlobal;
             GroupBox_Port.Header = portLabel;
             TBl_Port.Text = port.ToString();
             Btn_Close.Content = closeText;

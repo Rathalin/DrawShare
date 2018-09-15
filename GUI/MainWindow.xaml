@@ -34,7 +34,6 @@
                             <MenuItem x:Name="MI_Language_German" Header="German" Click="MI_Language_German_Click"></MenuItem>
                         </MenuItem>
                         <MenuItem x:Name="MI_ReportBug" Header="Report a Bug" Click="MenuItem_ReportBug_Click"></MenuItem>
-                        <MenuItem x:Name="MI_Restart" Header="Restart" Click="MenuItem_Restart_Click"></MenuItem>
                         <MenuItem x:Name="MI_Exit" Header="Exit" Click="MenuItem_Exit_Click"></MenuItem>
                     </MenuItem>
                     <MenuItem x:Name="MI_Share" Header="Share" Click="MenuItem_Share_Click"></MenuItem>

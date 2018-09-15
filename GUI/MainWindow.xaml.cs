@@ -44,12 +44,18 @@ namespace GUI
 
         #endregion Constructors
 
+        #region Enums
+
+        public enum Mode { Undefined, Server, Client }
+
+        #endregion Enums
+
         #region Attributes and Variables
 
         private Server server;
         private Client client;
-        private bool servermode;
         private int startport = 50000;
+        public Mode ApplicationMode { get; set; } = Mode.Undefined;
 
         private CustomBrush CustomBrush = new CustomBrush(Brushes.Black, 1);
 
@@ -114,7 +120,7 @@ namespace GUI
                     {
                         TBl_ConnectionStatus.Text = Translation.Connection_Status_Connected;
                         B_ConnectionStatus.Background = Brushes.Green;
-                        MI_Join.IsEnabled = false;
+                        //MI_Join.IsEnabled = false;
                     }
                     else
                     {
@@ -141,34 +147,38 @@ namespace GUI
             }
         }
 
-        private Language _Translation;
+        private Language _translation;
         public Language Translation
         {
-            get { return _Translation; }
+            get { return _translation; }
             private set
             {
-                if (_Translation != value)
+                if (_translation != value)
                 {
-                    _Translation = value;
+                    _translation = value;
                     UseDispatcher(this, delegate
                     {
-                        MI_Menu.Header = _Translation.MenuBar_Menu;
-                        MI_Theme.Header = _Translation.MenuBar_Menu_Theme;
-                        MI_Theme_Classic.Header = _Translation.MenuBar_Menu_Theme_Classic;
-                        MI_Theme_GreenBlue.Header = _Translation.MenuBar_Menu_Theme_GreenBlue;
-                        MI_Language.Header = _Translation.MenuBar_Language;
-                        MI_Language_English.Header = _Translation.MenuBar_Language_English;
-                        MI_Language_German.Header = _Translation.MenuBar_Language_German;
-                        MI_ReportBug.Header = _Translation.MenuBar_Menu_ReportBug;
-                        MI_Restart.Header = _Translation.MenuBar_Menu_Restart;
-                        MI_Exit.Header = _Translation.MenuBar_Menu_Exit;
-                        MI_Share.Header = _Translation.MenuBar_Share;
-                        MI_Join.Header = _Translation.MenuBar_Join;
-                        TBl_IP.Text = _Translation.Connection_TBl_IP;
-                        TBl_Port.Text = _Translation.Connection_TBl_Port;
-                        TBl_ConnectionStatus.Text = _Translation.Connection_Status_Disconnected;
-                        Btn_Clear.ToolTip = _Translation.PaintMenu_Clear_Tooltip;
-                        Btn_LockDrawing.ToolTip = _Translation.ControlMenu_Lock_Tooltip;
+                        MI_Menu.Header = _translation.MenuBar_Menu;
+                        MI_Theme.Header = _translation.MenuBar_Menu_Theme;
+                        MI_Theme_Classic.Header = _translation.MenuBar_Menu_Theme_Classic;
+                        MI_Theme_GreenBlue.Header = _translation.MenuBar_Menu_Theme_GreenBlue;
+                        MI_Language.Header = _translation.MenuBar_Language;
+                        MI_Language_English.Header = _translation.MenuBar_Language_English;
+                        MI_Language_German.Header = _translation.MenuBar_Language_German;
+                        MI_ReportBug.Header = _translation.MenuBar_Menu_ReportBug;
+                        MI_Exit.Header = _translation.MenuBar_Menu_Exit;
+                        MI_Share.Header = _translation.MenuBar_Share;
+                        MI_Join.Header = _translation.MenuBar_Join;
+                        TBl_IP.Text = _translation.Connection_TBl_IP;
+                        TBl_Port.Text = _translation.Connection_TBl_Port;
+                        if (Connected)
+                            TBl_ConnectionStatus.Text = _translation.Connection_Status_Connected;
+                        else
+                            TBl_ConnectionStatus.Text = _translation.Connection_Status_Disconnected;
+                        Btn_Clear.ToolTip = _translation.PaintMenu_Clear_Tooltip;
+                        Btn_LockDrawing.ToolTip = _translation.ControlMenu_Lock_Tooltip;
+                        if (TBl_ControlPanel.Text != "")
+                            TBl_ControlPanel.Text = _translation.ControlMenu_Lock_Text;
                     });
                 }
             }
@@ -177,6 +187,172 @@ namespace GUI
         #endregion Attributes and Variables
 
         #region Methodes
+
+        private void InitImages()
+        {
+            //Icon
+            Icon = ImageResource.DrawShareLogo1;
+
+            //Usericon
+            Label_UserCount.Background = ImageResource.UserCount;
+
+            //Clear
+            Btn_Clear.Background = ImageResource.Trash1_Small;
+
+
+            //Twitter
+            Btn_Twitter.Background = ImageResource.LogoTwitter;
+            //Github
+            Btn_Github.Background = ImageResource.LogoGithub;
+        }
+
+        private void InitValues()
+        {
+            //Lock
+            DrawingLocked = false;
+
+            //UserCount
+            UserCount = 1;
+        }
+
+        private void InitHyperlinks()
+        {
+            string linkTwitter = "https://twitter.com/Rhatalin";
+            Btn_Twitter.Tag = linkTwitter;
+            Btn_Twitter.ToolTip = linkTwitter;
+
+            string linkInstagram = "https://github.com/Rhatalin";
+            Btn_Github.Tag = linkInstagram;
+            Btn_Github.ToolTip = linkInstagram;
+
+        }
+
+        public void Reset()
+        {
+            if (ApplicationMode == Mode.Server)
+                server.Stop();
+            else if (ApplicationMode == Mode.Client)
+                client.Stop();
+            UserCount = 1;
+            Connected = false;
+            IP = "";
+            TBl_Info_Port.Text = "";
+            SP_Board.IsEnabled = true;
+            Btn_LockDrawing.IsEnabled = true;
+        }
+
+        public void UseDispatcher(UIElement el, Action func)
+        {
+            el.Dispatcher.BeginInvoke(
+                DispatcherPriority.Normal,
+                new DispatcherOperationCallback(delegate
+                {
+                    func();
+                    return null;
+                }),
+                null
+            );
+        }
+
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
+
+        public static string GetGlobalIPAddress()
+        {
+            return new WebClient().DownloadString("http://icanhazip.com").Trim();
+        }
+
+        public void OpenURI(string uri)
+        {
+            System.Diagnostics.Process.Start(uri);
+        }
+
+        private void SetTheme(Color colorBegin, Color colorEnd, Color colorBeginDark, Color colorEndDark)
+        {
+            try
+            {
+                Application.Current.Resources["ColorBegin_Standard"] = colorBegin;
+                Application.Current.Resources["ColorEnd_Standard"] = colorEnd;
+                Application.Current.Resources["ColorBeginDark_Standard"] = colorBeginDark;
+                Application.Current.Resources["ColorEndDark_Standard"] = colorEndDark;
+            }
+            catch (ResourceReferenceKeyNotFoundException)
+            {
+                MessageBox.Show("Theme could not be found. What poor programming!");
+            }
+        }
+
+        private void Send(MessageContainer msg)
+        {
+            if (ApplicationMode == Mode.Server)
+                server.SendAll(msg);
+            else if (ApplicationMode == Mode.Client)
+                client.Send(msg);
+        }
+
+        public void MessageReceived(object sender, MessageReceivedEventArgs e)
+        {
+            foreach (var m in e.MessageContainer.Messages)
+            {
+                if (m as DrawData != null)
+                {
+                    DrawData drawData = (DrawData)m;
+                    if (ApplicationMode == Mode.Server)
+                    {
+                        server.SendAll(drawData);
+                    }
+                    UseDispatcher(Canvas_Drawing, delegate
+                    {
+                        Draw(Canvas_Drawing,
+                            new CustomBrush(drawData.Color, drawData.Thickness), drawData.X1, drawData.Y1, drawData.X2, drawData.Y2);
+                    });
+                }
+                else if (m as DrawClear != null)
+                {
+                    UseDispatcher(Canvas_Drawing, delegate
+                    {
+                        Canvas_Drawing.Children.Clear();
+                    });
+                }
+                //client only receives
+                else if (ApplicationMode == Mode.Client)
+                {
+                    if (m as DrawLock != null)
+                    {
+                        DrawingLocked = true;
+                        UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = false; });
+                        UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = Translation.ControlMenu_Lock_Text; });
+                    }
+                    else if (m as DrawUnlock != null)
+                    {
+                        DrawingLocked = false;
+                        UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = true; });
+                        UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = string.Empty; });
+                    }
+                    else if (m as UserCount != null)
+                    {
+                        UserCount userC = (UserCount)m;
+                        UserCount = userC.Count;
+                    }
+                }
+            }
+        }
+
+        #endregion Methodes
+
+        #region GUI-Methodes
+
+        #region GUI Drawing
 
         private void DrawLine(Canvas target, CustomBrush brush, double x1, double y1, double x2, double y2)
         {
@@ -210,156 +386,6 @@ namespace GUI
             DrawEllipse(target, brush, x1, y1);
             DrawLine(target, brush, x1, y1, x2, y2);
         }
-
-        public void MessageReceived(object sender, MessageReceivedEventArgs e)
-        {
-            foreach (var m in e.MessageContainer.Messages)
-            {
-                if (m as DrawData != null)
-                {
-                    DrawData drawData = (DrawData)m;
-                    if (servermode)
-                    {
-                        server.SendAll(drawData);
-                    }
-                    UseDispatcher(Canvas_Drawing, delegate
-                    {
-                        Draw(Canvas_Drawing,
-                            new CustomBrush(drawData.Color, drawData.Thickness), drawData.X1, drawData.Y1, drawData.X2, drawData.Y2);
-                    });
-                }
-                else if (m as DrawClear != null)
-                {
-                    UseDispatcher(Canvas_Drawing, delegate
-                    {
-                        Canvas_Drawing.Children.Clear();
-                    });
-                }
-                //client only receives
-                else if (!servermode)
-                {
-                    if (m as DrawLock != null)
-                    {
-                        DrawingLocked = true;
-                        UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = false; });
-                        UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = Translation.ControlMenu_Lock_Text; });
-                    }
-                    else if (m as DrawUnlock != null)
-                    {
-                        DrawingLocked = false;
-                        UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = true; });
-                        UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = string.Empty; });
-                    }
-                    else if (m as UserCount != null)
-                    {
-                        UserCount userC = (UserCount)m;
-                        UserCount = userC.Count;
-                    }
-                }
-            }
-        }
-
-        public void UseDispatcher(UIElement el, Action func)
-        {
-            el.Dispatcher.BeginInvoke(
-                DispatcherPriority.Normal,
-                new DispatcherOperationCallback(delegate
-                {
-                    func();
-                    return null;
-                }),
-                null
-            );
-        }
-
-        private void Send(MessageContainer msg)
-        {
-            if (servermode)
-                server.SendAll(msg);
-            else
-                client.Send(msg);
-        }
-
-        public static string GetLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
-        }
-
-        public static string GetGlobalIPAddress()
-        {
-            return new WebClient().DownloadString("http://icanhazip.com").Trim();
-        }
-
-        private void SetTheme(Color colorBegin, Color colorEnd, Color colorBeginDark, Color colorEndDark)
-        {
-            try
-            {
-                Application.Current.Resources["ColorBegin_Standard"] = colorBegin;
-                Application.Current.Resources["ColorEnd_Standard"] = colorEnd;
-                Application.Current.Resources["ColorBeginDark_Standard"] = colorBeginDark;
-                Application.Current.Resources["ColorEndDark_Standard"] = colorEndDark;
-            }
-            catch (ResourceReferenceKeyNotFoundException)
-            {
-                MessageBox.Show("Theme could not be found. What poor programming!");
-            }
-        }
-
-        private void InitHyperlinks()
-        {
-            string linkTwitter = "https://twitter.com/Rhatalin";
-            Btn_Twitter.Tag = linkTwitter;
-            Btn_Twitter.ToolTip = linkTwitter;
-
-            string linkInstagram = "https://github.com/Rhatalin";
-            Btn_Github.Tag = linkInstagram;
-            Btn_Github.ToolTip = linkInstagram;
-
-        }
-
-        private void InitImages()
-        {
-            //Icon
-            Icon = ImageResource.DrawShareLogo1;
-
-            //Usericon
-            Label_UserCount.Background = ImageResource.UserCount;
-
-            //Clear
-            Btn_Clear.Background = ImageResource.Trash1_Small;
-
-
-            //Twitter
-            Btn_Twitter.Background = ImageResource.LogoTwitter;
-            //Github
-            Btn_Github.Background = ImageResource.LogoGithub;
-        }
-
-        private void InitValues()
-        {
-            //Lock
-            DrawingLocked = false;
-
-            //UserCount
-            UserCount = 1;
-        }
-
-        public void OpenURI(string uri)
-        {
-            System.Diagnostics.Process.Start(uri);
-        }
-
-        #endregion Methodes
-
-        #region GUI
 
         private void Canvas_Drawing_MouseMove(object sender, MouseEventArgs e)
         {
@@ -416,17 +442,15 @@ namespace GUI
         private void Btn_Clear_Click(object sender, RoutedEventArgs e)
         {
             Canvas_Drawing.Children.Clear();
-            if (servermode)
+            if (ApplicationMode == Mode.Server)
             {
                 server.SendAll(new DrawClear());
             }
-            else if (client != null && !DrawingLocked)
+            else if (ApplicationMode == Mode.Client && !DrawingLocked)
             {
                 client.Send(new DrawClear());
             }
         }
-
-
 
         private void Btn_Thickness_Click(object sender, RoutedEventArgs e)
         {
@@ -455,89 +479,104 @@ namespace GUI
             }
         }
 
-        private void MenuItem_Restart_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
-            Application.Current.Shutdown();
-        }
-
-        private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
+        #endregion GUI Drawing
 
         private void MenuItem_Join_Click(object sender, RoutedEventArgs e)
         {
-            if (server == null && client == null)
+            Reset();
+            Btn_LockDrawing.IsEnabled = false;
+            DialogChangeConnection dlg = new DialogChangeConnection(
+                Translation.General_Connection, Translation.General_IP, "10.0.0.1",
+                Translation.General_Port, startport, Translation.General_Cancel, Translation.General_Connect,
+                Translation.Dialog_ChangeConnection_InvalidIP, Translation.Dialog_ChangeConnection_InvalidPort, Translation.General_InvalidInput);
+            dlg.Owner = this;
+            if (dlg.ShowDialog() == true)
             {
-                servermode = false;
-                Btn_LockDrawing.IsEnabled = false;
-                DialogChangeConnection dlg = new DialogChangeConnection(
-                    Translation.General_Connection, Translation.General_IP, "10.0.0.1",
-                    Translation.General_Port, startport, Translation.General_Cancel, Translation.General_Connect);
-                dlg.Owner = this;
-                if (dlg.ShowDialog() == true)
+                ApplicationMode = Mode.Client;
+                client = new Client(this, dlg.IPAddress, dlg.Port);
+                ThreadPool.QueueUserWorkItem(delegate
                 {
-                    client = new Client(this, dlg.IPAddress, dlg.Port);
-                    ThreadPool.QueueUserWorkItem(delegate
+                    if (client.TryConnect())
                     {
-                        if (client.TryConnect())
+                        ThreadPool.QueueUserWorkItem(delegate { client.Connect(); });
+                        UseDispatcher(this, delegate
                         {
-                            ThreadPool.QueueUserWorkItem(delegate { client.Connect(); });
-                            UseDispatcher(this, delegate
-                            {
-                                Title = "DrawShare - Client";
-                                IP = dlg.IPAddress;
-                                Port = dlg.Port;
-                                Connected = true;
-                                Canvas_Drawing.Children.Clear();
-                                MI_Share.IsEnabled = false;
-                            });
-                        }
-                        else
+                            Title = "DrawShare - Client";
+                            IP = dlg.IPAddress;
+                            Port = dlg.Port;
+                            Connected = true;
+                            Canvas_Drawing.Children.Clear();
+                            //MI_Share.IsEnabled = false;
+                        });
+                    }
+                    else
+                    {
+                        UseDispatcher(this, delegate
                         {
-                            UseDispatcher(this, delegate
-                            {
-                                MessageBox.Show(this, Translation.Dialog_ConnectionError_ErrorMsg, Translation.General_Error,
-                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.No, MessageBoxOptions.None);
-                            });
-                            client = null;
-                        }
-                    });
-                }
+                            MessageBox.Show(this, Translation.Dialog_ConnectionError_ErrorMsg, Translation.General_Error,
+                                MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.No, MessageBoxOptions.None);
+                        });
+                        client.Stop();
+                    }
+                });
+            }
+            else
+            {
+                ApplicationMode = Mode.Undefined;
             }
         }
 
         private void MenuItem_Share_Click(object sender, RoutedEventArgs e)
         {
-            int port = startport;
-            if (client == null)
+            if (ApplicationMode != Mode.Server)
             {
+                Reset();
+                int port = startport;
                 Title = "DrawShare - Server";
-                servermode = true;
-                if (server == null)
+                server = new Server(this);
+                while (!server.TryPort(port))
                 {
-                    server = new Server(this);
-                    while (!server.TryPort(port))
-                    {
-                        if (port >= 65535)
-                            port = 55550;
-                        else
-                            port++;
-                    }
-                    ThreadPool.QueueUserWorkItem(delegate { server.Receive(); });
-                    Connected = true;
-                    Btn_LockDrawing.IsEnabled = true;
+                    if (port >= 65535)
+                        port = 55550;
+                    else
+                        port++;
                 }
+                ThreadPool.QueueUserWorkItem(delegate { server.Receive(); });
+                Connected = true;
+                Btn_LockDrawing.IsEnabled = true;
+
                 IP = GetGlobalIPAddress();
                 Port = port;
-                DialogConnectionInfo dlg = new DialogConnectionInfo(
-                    Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
-                    Translation.General_IP, IP, Translation.General_Port, Port, Translation.General_Close);
-                dlg.Owner = this;
-                dlg.Show();
             }
+            DialogConnectionInfo dlg = new DialogConnectionInfo(
+                Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
+                Translation.General_IP, GetLocalIPAddress(), IP, Translation.General_Port, Port, Translation.General_Close);
+            dlg.Owner = this;
+            dlg.Show();
+            ApplicationMode = Mode.Server;
+        }
+
+        private void Btn_LockDrawing_Click(object sender, RoutedEventArgs e)
+        {
+            if (ApplicationMode == Mode.Server)
+            {
+                if (DrawingLocked)
+                    server.SendAll(new DrawUnlock());
+                else
+                    server.SendAll(new DrawLock());
+            }
+            DrawingLocked = !DrawingLocked;
+        }
+
+        /*private void MenuItem_Restart_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
+        }*/
+
+        private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
 
         private void MI_Theme_Classic_Click(object sender, RoutedEventArgs e)
@@ -565,21 +604,6 @@ namespace GUI
 
         }
 
-        private void Btn_LockDrawing_Click(object sender, RoutedEventArgs e)
-        {
-            if (DrawingLocked)
-            {
-                if (servermode)
-                    server.SendAll(new DrawUnlock());
-            }
-            else
-            {
-                if (servermode)
-                    server.SendAll(new DrawLock());
-            }
-            DrawingLocked = !DrawingLocked;
-        }
-
         private void Btn_SocialMedia_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -602,5 +626,5 @@ namespace GUI
             */
         }
     }
-    #endregion GUI
+    #endregion GUI-Methodes
 }

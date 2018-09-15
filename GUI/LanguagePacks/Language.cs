@@ -16,6 +16,7 @@ namespace GUI.LanguagePacks
         public string General_Error { get; set; }
         public string General_IP { get; set; }
         public string General_Port { get; set; }
+        public string General_InvalidInput { get; set; }
         #endregion General
 
         #region MenuBar
@@ -67,6 +68,11 @@ namespace GUI.LanguagePacks
         #region Dialog ConnectionInfo
         public string Dialog_ConnectionInfo_Infotext { get; set; }
         #endregion Dialog ConnectionInfo
+
+        #region Dialog ChangeConnection
+        public string Dialog_ChangeConnection_InvalidIP { get; set; }
+        public string Dialog_ChangeConnection_InvalidPort { get; set; }
+        #endregion Dialog ChangeConnection
 
         #region Dialog ConnectionError
         public string Dialog_ConnectionError_ErrorMsg { get; set; }

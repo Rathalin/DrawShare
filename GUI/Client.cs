@@ -13,13 +13,13 @@ namespace GUI
 {
     public class Client
     {
-        public Client(MainWindow mainwindow)
+        public Client(MainWindow mainWindow)
         {
-            mainWindow = mainwindow;
-            MessageReceived += mainWindow.MessageReceived;
+            mw = mainWindow;
+            MessageReceived += mw.MessageReceived;
         }
 
-        public Client(MainWindow mainwindow, string ipaddress, int port) : this(mainwindow)
+        public Client(MainWindow mw, string ipaddress, int port) : this(mw)
         {
             ip = ipaddress;
             this.port = port;
@@ -29,7 +29,7 @@ namespace GUI
         {
             try
             {
-                transfer = new Transfer<MessageContainer>(new TcpClient(ip, port));
+                Transfer = new Transfer<MessageContainer>(new TcpClient(ip, port));
             }
             catch (SocketException)
             {
@@ -42,11 +42,11 @@ namespace GUI
         {
             try
             {
-                while (transfer.TcpClient.Connected)
+                while (Transfer.TcpClient.Connected)
                 {
                     try
                     {
-                        MessageReceived?.Invoke(null, new MessageReceivedEventArgs(transfer.Receive()));
+                        MessageReceived?.Invoke(null, new MessageReceivedEventArgs(Transfer.Receive()));
                     }
                     catch (IOException)
                     {
@@ -62,13 +62,17 @@ namespace GUI
             {
                 OnServerDisconnect();
             }
+            catch (NullReferenceException)
+            {
+                Console.WriteLine("Client stopped");
+            }
         }
 
         public void Send(MessageContainer msgc)
         {
             try
             {
-                transfer.Send(msgc);
+                Transfer.Send(msgc);
             }
             catch (IOException)
             {
@@ -81,24 +85,21 @@ namespace GUI
             Send(new MessageContainer() { Messages = new List<Message>() { msg } });
         }
 
+        public void Stop()
+        {
+            Transfer = null;
+        }
+
         private void OnServerDisconnect()
         {
             Console.WriteLine("Server disconnected!");
-            MessageReceived?.Invoke(null, new MessageReceivedEventArgs(new MessageContainer(new DrawUnlock())));
-            mainWindow.Connected = false;
-            mainWindow.UserCount = 1;
-            mainWindow.IP = "";
-            mainWindow.UseDispatcher(mainWindow, delegate
-            {
-                mainWindow.TBl_Info_Port.Text = "";
-                mainWindow.Btn_LockDrawing.IsEnabled = true;
-            });
+            mw.UseDispatcher(mw, delegate { mw.Reset(); });
         }
 
         private string ip;
         private int port;
-        private MainWindow mainWindow;
-        private Transfer<MessageContainer> transfer;
+        private MainWindow mw;
+        public Transfer<MessageContainer> Transfer { get; private set; }
         public event MessageReceivedEventHandler MessageReceived;
     }
 }

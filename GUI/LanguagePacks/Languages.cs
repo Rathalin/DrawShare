@@ -18,6 +18,7 @@ namespace GUI.LanguagePacks
             General_Error = "Error",
             General_IP = "IP",
             General_Port = "Port",
+            General_InvalidInput = "Invalid Input",
 
             MenuBar_Menu = "Menu",
 
@@ -47,7 +48,9 @@ namespace GUI.LanguagePacks
             ControlMenu_Lock_Tooltip = "(Un)lock the drawing board for others",
             ControlMenu_Lock_Text = "The host has locked the drawing board for others!",
             
-            Dialog_ConnectionInfo_Infotext = "Others can connect to you by using this data",
+            Dialog_ConnectionInfo_Infotext = "Others can connect to you by using this data.",
+            Dialog_ChangeConnection_InvalidIP = "Invalid IP",
+            Dialog_ChangeConnection_InvalidPort = "Invalid Port",
             Dialog_ConnectionError_ErrorMsg = "Failed to establish a connection to your partner!",
 
             ExitDlg_Text = "Do you really want to exit?",
@@ -63,6 +66,7 @@ namespace GUI.LanguagePacks
             General_Error = "Fehler",
             General_IP = "IP-Adresse",
             General_Port = "Port",
+            General_InvalidInput = "Ungültige Eingabe",
 
             MenuBar_Menu = "Menü",
 
@@ -93,6 +97,8 @@ namespace GUI.LanguagePacks
             ControlMenu_Lock_Text = "Der Host hat das Zeichenbrett für andere gesperrt!",
             
             Dialog_ConnectionInfo_Infotext = "Mit diesen Daten können sich andere mit dir verbinden.",
+            Dialog_ChangeConnection_InvalidIP = "Ungültige IP-Adresse",
+            Dialog_ChangeConnection_InvalidPort = "Ungültiger Port",
             Dialog_ConnectionError_ErrorMsg = "Es konnte keine Verbindung zum Partner hergestellt werden!",
 
             ExitDlg_Text = "Wirklich beenden?",

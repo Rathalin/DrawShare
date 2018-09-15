@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GUI.Visualisation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,9 +24,11 @@ namespace GUI.Dialogs
         public DialogChangeConnection()
         {
             InitializeComponent();
+            Icon = ImageResource.DrawShareLogo1;
         }
 
-        public DialogChangeConnection(string title, string ipLabel, string ip, string portLabel, int port, string cancelText, string connectText) : this()
+        public DialogChangeConnection(string title, string ipLabel, string ip, string portLabel, int port, string cancelText, string connectText,
+            string invalidIP, string invalidPort, string invalidInput) : this()
         {
             Title = title;
             GroupBox_IP.Header = ipLabel;
@@ -34,12 +37,19 @@ namespace GUI.Dialogs
             TB_Port.Text = port.ToString();
             Btn_Cancel.Content = cancelText;
             Btn_Connect.Content = connectText;
+            this.invalidIP = invalidIP;
+            this.invalidPort = invalidPort;
+            this.invalidInput = invalidInput;
+
         }
 
 
         public string IPAddress { get; private set; }
         public int Port { get; private set; }
 
+        private string invalidIP;
+        private string invalidPort;
+        private string invalidInput;
 
         private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
@@ -61,7 +71,7 @@ namespace GUI.Dialogs
             else
             {
                 error = true;
-                errorMsg += "Ungültige IP-Adresse";
+                errorMsg += invalidIP;
             }
             int inputPort;
             if (int.TryParse(TB_Port.Text, out inputPort))
@@ -69,7 +79,7 @@ namespace GUI.Dialogs
                 if (inputPort >= 65535)
                 {
                     error = true;
-                    errorMsg += "\nUngültiger Port";
+                    errorMsg += "\n" + invalidPort;
                 }
                 else
                 {
@@ -79,11 +89,11 @@ namespace GUI.Dialogs
             else
             {
                 error = true;
-                errorMsg += "\nUngültiger Port";
+                errorMsg += "\n" + invalidPort;
             }
             if (error)
             {
-                MessageBox.Show(errorMsg, "Ungültige Eingabe", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(errorMsg, invalidInput, MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {

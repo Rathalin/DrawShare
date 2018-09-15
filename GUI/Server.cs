@@ -38,51 +38,61 @@ namespace GUI
 
         public void Receive()
         {
-            while (true)
+            try
             {
-                Transfer<MessageContainer> t = new Transfer<MessageContainer>(Listener.AcceptTcpClient());
-                //MessageBox.Show("Client connected");
-                Transfers.Add(t);
-                mainWindow.UseDispatcher(mainWindow.TBl_UserCount, delegate { mainWindow.TBl_UserCount.Text = (Transfers.Count + 1).ToString(); });
-                List<Message> msgList = new List<Message>();
-                mainWindow.UseDispatcher(mainWindow.Canvas_Drawing, delegate
+                while (true)
                 {
-                        //Send init data (all in this thread to avoid race conditions)
-                        foreach (var el in mainWindow.Canvas_Drawing.Children)
+                    Transfer<MessageContainer> t = new Transfer<MessageContainer>(Listener.AcceptTcpClient());
+                    //MessageBox.Show("Client connected");
+                    Transfers.Add(t);
+                    mainWindow.UseDispatcher(mainWindow.TBl_UserCount, delegate { mainWindow.TBl_UserCount.Text = (Transfers.Count + 1).ToString(); });
+                    List<Message> msgList = new List<Message>();
+                    mainWindow.UseDispatcher(mainWindow.Canvas_Drawing, delegate
                     {
-                        if (el as Line != null)
+                    //Send init data (all in this thread to avoid race conditions)
+                    foreach (var el in mainWindow.Canvas_Drawing.Children)
                         {
-                            Line l = (Line)el;
-                            msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
+                            if (el as Line != null)
+                            {
+                                Line l = (Line)el;
+                                msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
+                            }
                         }
-                    }
-                    if (mainWindow.DrawingLocked)
-                        msgList.Add(new DrawLock());
-                    else
-                        msgList.Add(new DrawUnlock());
-                    t.Send(new MessageContainer() { Messages = msgList });
+                        if (mainWindow.DrawingLocked)
+                            msgList.Add(new DrawLock());
+                        else
+                            msgList.Add(new DrawUnlock());
+                        t.Send(new MessageContainer() { Messages = msgList });
 
-                        //Update other users
-                        SendAll(new UserCount(Transfers.Count + 1));
-                });
+                    //Update other users
+                    SendAll(new UserCount(Transfers.Count + 1));
+                    });
 
-                ThreadPool.QueueUserWorkItem(delegate
+                    ThreadPool.QueueUserWorkItem(delegate
+                    {
+                        try
+                        {
+                            while (true)
+                            {
+                                MessageReceived?.Invoke(null, new MessageReceivedEventArgs(t.Receive()));
+                            }
+                        }
+                        catch (IOException)
+                        {
+                        //MessageBox.Show("Client disconnected");
+                        Transfers.Remove(t);
+                            mainWindow.UserCount = Transfers.Count + 1;
+                            SendAll(new UserCount(Transfers.Count + 1));
+                        }
+                    });
+                }
+            }
+            catch (SocketException ex)
+            {
+                if (ex.ErrorCode != 10004)
                 {
-                    try
-                    {
-                        while (true)
-                        {
-                            MessageReceived?.Invoke(null, new MessageReceivedEventArgs(t.Receive()));
-                        }
-                    }
-                    catch (IOException)
-                    {
-                            //MessageBox.Show("Client disconnected");
-                            Transfers.Remove(t);
-                        mainWindow.UserCount = Transfers.Count + 1;
-                        SendAll(new UserCount(Transfers.Count + 1));
-                    }
-                });
+                    throw ex;
+                }
             }
         }
 
@@ -114,6 +124,14 @@ namespace GUI
         {
             foreach (var t in Transfers)
                 t.Send(new MessageContainer() { Messages = new List<Message>() { msg } });
+        }
+
+        public void Stop()
+        {
+            for (int i = 0; i < Transfers.Count; i++)
+                Transfers[i] = null;
+            Listener.Stop();
+            Transfers.Clear();
         }
 
         public TcpListener Listener { get; set; }

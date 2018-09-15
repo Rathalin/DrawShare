@@ -5,26 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GUI.Dialogs"
         mc:Ignorable="d" WindowStartupLocation="CenterOwner"
-        Title="Connection" MinHeight="200" MinWidth="250" Height="200" Width="250">
+        Title="Connection" MinHeight="200" MinWidth="250" Height="210" Width="250">
     <Grid Style="{StaticResource Style_Grid_Opacity04}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="1.5*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"></RowDefinition>
-            <RowDefinition Height="2*"></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="0.8*"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="TBl_Info" TextWrapping="Wrap" FontWeight="Bold" TextAlignment="Center" Padding="10"
-                   Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-        <GroupBox x:Name="GroupBox_IP" Header="IP" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1">
-            <TextBlock x:Name="TBl_IPAddress" FontWeight="Bold"></TextBlock>
+        <TextBlock x:Name="TBl_Info" TextWrapping="Wrap" FontWeight="SemiBold" TextAlignment="Center" Padding="10" Text="Infotext will be here."
+                   Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,5,0,0"></TextBlock>
+        <GroupBox x:Name="GroupBox_IP_Local" Header="IP" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1">
+            <TextBlock x:Name="TBl_IPAddress_Local" FontWeight="Bold"></TextBlock>
         </GroupBox>
-        <GroupBox x:Name="GroupBox_Port" Header="Port" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="1">
+        <GroupBox x:Name="GroupBox_IP_Global" Header="IP" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2">
+            <TextBlock x:Name="TBl_IPAddress_Global" FontWeight="Bold"></TextBlock>
+        </GroupBox>
+        <GroupBox x:Name="GroupBox_Port" Header="Port" MinWidth="70" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2">
             <TextBlock x:Name="TBl_Port" FontWeight="Bold"></TextBlock>
         </GroupBox>
-        <Button x:Name="Btn_Close" Content="Close" MinWidth="80" Click="Btn_Close_Click" Margin="0,0,0,10" Grid.Row="2"
+        <Button x:Name="Btn_Close" Content="Close" MinWidth="80" Click="Btn_Close_Click" Margin="0,0,0,5" Grid.Row="3"
                 VerticalAlignment="Center" HorizontalAlignment="Center" Grid.ColumnSpan="2"></Button>
     </Grid>
 </Window>
