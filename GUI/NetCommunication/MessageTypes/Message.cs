@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetCommunication.MessageTypes
+namespace GUI.NetCommunication.MessageTypes
 {
-    public class DrawClear : Message
+    public abstract class Message
     {
-        public DrawClear() { }
+        public Message() { }
     }
 }

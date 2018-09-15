@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetCommunication.MessageTypes
+namespace GUI.NetCommunication.MessageTypes
 {
-    public class DrawUnlock : Message
+    public class DrawClear : Message
     {
-        public DrawUnlock() { }
+        public DrawClear() { }
     }
 }

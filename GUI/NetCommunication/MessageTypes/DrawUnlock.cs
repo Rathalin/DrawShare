@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetCommunication
+namespace GUI.NetCommunication.MessageTypes
 {
-    class Program
+    public class DrawUnlock : Message
     {
-        static void Main(string[] args)
-        {
-        }
+        public DrawUnlock() { }
     }
 }

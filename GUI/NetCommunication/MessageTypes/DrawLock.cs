@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetCommunication
+namespace GUI.NetCommunication.MessageTypes
 {
-    public enum TypeOfMessage
+    public class DrawLock : Message
     {
-        NotSet,
-        DrawData
+        public DrawLock() { }
     }
 }

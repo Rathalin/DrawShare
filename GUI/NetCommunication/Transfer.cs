@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace NetCommunication
+namespace GUI.NetCommunication
 {
     public class Transfer<T>
     {

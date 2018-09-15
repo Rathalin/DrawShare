@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetCommunication
+namespace GUI.NetCommunication
 {
     public class DisconnectedException : Exception
     {

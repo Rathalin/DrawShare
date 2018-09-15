@@ -49,6 +49,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>DrawShareLogo_Icon_50.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <StartupObject>GUI.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -80,6 +87,18 @@
     </Compile>
     <Compile Include="LanguagePacks\Languages.cs" />
     <Compile Include="LanguagePacks\Language.cs" />
+    <Compile Include="NetCommunication\DisconnectedException.cs" />
+    <Compile Include="NetCommunication\MessageContainer.cs" />
+    <Compile Include="NetCommunication\MessageReceivedEventArgs.cs" />
+    <Compile Include="NetCommunication\MessageTypes\DrawClear.cs" />
+    <Compile Include="NetCommunication\MessageTypes\DrawData.cs" />
+    <Compile Include="NetCommunication\MessageTypes\DrawLock.cs" />
+    <Compile Include="NetCommunication\MessageTypes\DrawUnlock.cs" />
+    <Compile Include="NetCommunication\MessageTypes\Message.cs" />
+    <Compile Include="NetCommunication\MessageTypes\TestMessage.cs" />
+    <Compile Include="NetCommunication\MessageTypes\UserCount.cs" />
+    <Compile Include="NetCommunication\Transfer.cs" />
+    <Compile Include="NetCommunication\TypeOfMessage.cs" />
     <Compile Include="ResourcePictures.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -139,12 +158,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NetCommunication\NetCommunication.csproj">
-      <Project>{58875118-2c8a-42fc-bcf7-0a1978d18dd4}</Project>
-      <Name>NetCommunication</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
@@ -217,6 +230,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\DrawShareLogo_50.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DrawShareLogo_50.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="DrawShareLogo_Icon_50.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

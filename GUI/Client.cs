@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NetCommunication;
 using System.Net.Sockets;
 using System.IO;
 using System.Threading;
-using NetCommunication.MessageTypes;
+using GUI.NetCommunication;
+using GUI.NetCommunication.MessageTypes;
 
 namespace GUI
 {
@@ -53,6 +53,11 @@ namespace GUI
                         catch (IOException)
                         {
                             Console.WriteLine("Server disconnected!");
+                            mainWindow.Connected = false;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            Console.WriteLine("Server disconnedted???");
                             mainWindow.Connected = false;
                         }
                     }

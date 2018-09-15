@@ -1,4 +1,4 @@
-﻿using NetCommunication.MessageTypes;
+﻿using GUI.NetCommunication.MessageTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace NetCommunication
+namespace GUI.NetCommunication
 {
     public class MessageContainer
     {

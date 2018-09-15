@@ -1,8 +1,8 @@
 ﻿using GUI.Dialogs;
 using GUI.LanguagePacks;
 using GUI.Visualisation;
-using NetCommunication;
-using NetCommunication.MessageTypes;
+using GUI.NetCommunication;
+using GUI.NetCommunication.MessageTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +33,8 @@ namespace GUI
 
         public MainWindow()
         {
-            DataContext = this;
             InitializeComponent();
+            DataContext = this;
             InitHyperlinks();
             InitImages();
             InitValues();
@@ -307,7 +307,7 @@ namespace GUI
             }
             catch (ResourceReferenceKeyNotFoundException)
             {
-                MessageBox.Show("Theme konnte nicht gefunden werden. Bitte wenden sie sich an den schlechten Programmierer!");
+                MessageBox.Show("Theme could not be found. What poor programming!");
             }
         }
 
@@ -495,7 +495,11 @@ namespace GUI
                         }
                         else
                         {
-                            MessageBox.Show(Translation.Dialog_ConnectionError_ErrorMsg, Translation.General_Error, MessageBoxButton.OK, MessageBoxImage.Error);
+                            UseDispatcher(this, delegate
+                            {
+                                MessageBox.Show(this, Translation.Dialog_ConnectionError_ErrorMsg, Translation.General_Error,
+                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.No, MessageBoxOptions.RightAlign);
+                            });
                             client = null;
                         }
                     });

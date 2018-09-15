@@ -1,5 +1,5 @@
-﻿using NetCommunication;
-using NetCommunication.MessageTypes;
+﻿using GUI.NetCommunication;
+using GUI.NetCommunication.MessageTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
