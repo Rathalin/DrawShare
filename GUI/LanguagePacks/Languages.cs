@@ -15,6 +15,7 @@ namespace GUI.LanguagePacks
             General_Close = "Close",
             General_Connect = "Connect",
             General_Connection = "Connection",
+            General_Error = "Error",
             General_IP = "IP",
             General_Port = "Port",
 
@@ -47,6 +48,7 @@ namespace GUI.LanguagePacks
             ControlMenu_Lock_Text = "The host has locked the drawing board for others!",
             
             Dialog_ConnectionInfo_Infotext = "Others can connect to you by using this data",
+            Dialog_ConnectionError_ErrorMsg = "Failed to establish a connection to your partner!",
 
             ExitDlg_Text = "Do you really want to exit?",
             ExitDlg_Caption = "Exit"
@@ -58,6 +60,7 @@ namespace GUI.LanguagePacks
             General_Close = "Schließen",
             General_Connect = "Verbinden",
             General_Connection = "Verbindung",
+            General_Error = "Fehler",
             General_IP = "IP-Adresse",
             General_Port = "Port",
 
@@ -90,6 +93,7 @@ namespace GUI.LanguagePacks
             ControlMenu_Lock_Text = "Der Host hat das Zeichenbrett für andere gesperrt!",
             
             Dialog_ConnectionInfo_Infotext = "Mit diesen Daten können sich andere mit dir verbinden.",
+            Dialog_ConnectionError_ErrorMsg = "Es konnte keine Verbindung zum Partner hergestellt werden!",
 
             ExitDlg_Text = "Wirklich beenden?",
             ExitDlg_Caption = "Beenden"

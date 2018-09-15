@@ -495,7 +495,7 @@ namespace GUI
                         }
                         else
                         {
-                            MessageBox.Show("Es konnte keine Verbindung zum Partner hergestellt werden!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show(Translation.Dialog_ConnectionError_ErrorMsg, Translation.General_Error, MessageBoxButton.OK, MessageBoxImage.Error);
                             client = null;
                         }
                     });

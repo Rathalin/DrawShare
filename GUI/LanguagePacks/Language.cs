@@ -13,6 +13,7 @@ namespace GUI.LanguagePacks
         public string General_Close { get; set; }
         public string General_Connect { get; set; }
         public string General_Connection { get; set; }
+        public string General_Error { get; set; }
         public string General_IP { get; set; }
         public string General_Port { get; set; }
         #endregion General
@@ -66,6 +67,10 @@ namespace GUI.LanguagePacks
         #region Dialog ConnectionInfo
         public string Dialog_ConnectionInfo_Infotext { get; set; }
         #endregion Dialog ConnectionInfo
+
+        #region Dialog ConnectionError
+        public string Dialog_ConnectionError_ErrorMsg { get; set; }
+        #endregion Dialog ConnectionError
 
         #endregion Dialogs
 
