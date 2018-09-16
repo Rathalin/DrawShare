@@ -323,6 +323,8 @@ namespace GUI
                     {
                         Canvas_Drawing.Children.Clear();
                     });
+                    if (ApplicationMode == Mode.Server)
+                        server.SendAll(m);
                 }
                 //client only receives
                 else if (ApplicationMode == Mode.Client)
