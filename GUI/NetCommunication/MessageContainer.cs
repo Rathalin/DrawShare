@@ -30,7 +30,9 @@ namespace GUI.NetCommunication
         [XmlElement(typeof(DrawClear), ElementName = "DrawClear")]
         [XmlElement(typeof(DrawLock), ElementName = "DrawLock")]
         [XmlElement(typeof(DrawUnlock), ElementName = "DrawUnlock")]
-        [XmlElement(typeof(UserCount), ElementName = "UserCount")]        
+        [XmlElement(typeof(UserCount), ElementName = "UserCount")]
+        [XmlElement(typeof(ClientDisconnect), ElementName = "ClientDisconnect")]
+        [XmlElement(typeof(ServerDisconnect), ElementName = "ServerDisconnect")]        
         public List<Message> Messages { get; set; }
     }
 }

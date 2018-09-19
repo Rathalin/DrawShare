@@ -90,11 +90,13 @@
     <Compile Include="NetCommunication\DisconnectedException.cs" />
     <Compile Include="NetCommunication\MessageContainer.cs" />
     <Compile Include="NetCommunication\MessageReceivedEventArgs.cs" />
+    <Compile Include="NetCommunication\MessageTypes\ClientDisconnect.cs" />
     <Compile Include="NetCommunication\MessageTypes\DrawClear.cs" />
     <Compile Include="NetCommunication\MessageTypes\DrawData.cs" />
     <Compile Include="NetCommunication\MessageTypes\DrawLock.cs" />
     <Compile Include="NetCommunication\MessageTypes\DrawUnlock.cs" />
     <Compile Include="NetCommunication\MessageTypes\Message.cs" />
+    <Compile Include="NetCommunication\MessageTypes\ServerDisconnect.cs" />
     <Compile Include="NetCommunication\MessageTypes\TestMessage.cs" />
     <Compile Include="NetCommunication\MessageTypes\UserCount.cs" />
     <Compile Include="NetCommunication\Transfer.cs" />

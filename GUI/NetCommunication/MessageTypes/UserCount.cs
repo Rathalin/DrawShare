@@ -8,7 +8,10 @@ namespace GUI.NetCommunication.MessageTypes
 {
     public class UserCount : Message
     {
-        public UserCount() { }
+        public UserCount()
+        {
+            Count = 0;
+        }
 
         public UserCount(int count)
         {

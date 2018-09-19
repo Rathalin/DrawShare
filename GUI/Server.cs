@@ -16,11 +16,27 @@ namespace GUI
 {
     public class Server
     {
+        #region Constructors
+
         public Server(MainWindow mainwindow)
         {
-            mainWindow = mainwindow;
-            MessageReceived += mainWindow.MessageReceived;
+            mw = mainwindow;
+            MessageReceived += mw.MessageReceived;
         }
+
+        #endregion Constructors
+
+        #region Attributes and Variables
+
+        public TcpListener Listener { get; set; }
+        public List<Transfer<MessageContainer>> Transfers { get; set; } = new List<Transfer<MessageContainer>>();
+        private readonly object __lockTransfers = new object();
+        public event MessageReceivedEventHandler MessageReceived;
+        private MainWindow mw;
+
+        #endregion Attributes and Variables
+
+        #region Methodes
 
         public bool TryPort(int port)
         {
@@ -42,15 +58,17 @@ namespace GUI
             {
                 while (true)
                 {
-                    Transfer<MessageContainer> t = new Transfer<MessageContainer>(Listener.AcceptTcpClient());
-                    //MessageBox.Show("Client connected");
-                    Transfers.Add(t);
-                    mainWindow.UseDispatcher(mainWindow.TBl_UserCount, delegate { mainWindow.TBl_UserCount.Text = (Transfers.Count + 1).ToString(); });
+                    Transfer<MessageContainer> transfer = new Transfer<MessageContainer>(Listener.AcceptTcpClient());
+                    mw.WriteDebug("Client connected");
+                    int transferCount;
+                    lock (__lockTransfers)
+                        Transfers.Add(transfer);
+                    transferCount = Transfers.Count + 1;
                     List<Message> msgList = new List<Message>();
-                    mainWindow.UseDispatcher(mainWindow.Canvas_Drawing, delegate
+                    mw.UseDispatcher(mw.Canvas_Drawing, delegate
                     {
-                    //Send init data (all in this thread to avoid race conditions)
-                    foreach (var el in mainWindow.Canvas_Drawing.Children)
+                        //Send init data (all in this thread to avoid race conditions)
+                        foreach (var el in mw.Canvas_Drawing.Children)
                         {
                             if (el as Line != null)
                             {
@@ -58,14 +76,14 @@ namespace GUI
                                 msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
                             }
                         }
-                        if (mainWindow.DrawingLocked)
+                        if (mw.DrawingLocked)
                             msgList.Add(new DrawLock());
                         else
                             msgList.Add(new DrawUnlock());
-                        t.Send(new MessageContainer() { Messages = msgList });
+                        Send(transfer, new MessageContainer(msgList));
 
-                    //Update other users
-                    SendAll(new UserCount(Transfers.Count + 1));
+                        //Update other users
+                        SendAll(new UserCount(transferCount));
                     });
 
                     ThreadPool.QueueUserWorkItem(delegate
@@ -74,23 +92,22 @@ namespace GUI
                         {
                             while (true)
                             {
-                                MessageReceived?.Invoke(null, new MessageReceivedEventArgs(t.Receive()));
+                                MessageReceived?.Invoke(transfer, new MessageReceivedEventArgs(transfer.Receive()));
                             }
                         }
                         catch (IOException)
                         {
-                        //MessageBox.Show("Client disconnected");
-                        Transfers.Remove(t);
-                            mainWindow.UserCount = Transfers.Count + 1;
-                            SendAll(new UserCount(Transfers.Count + 1));
+                            OnClientDisconnect(transfer);
                         }
                     });
+                    mw.UseDispatcher(mw.TBl_UserCount, delegate { mw.TBl_UserCount.Text = (transferCount).ToString(); });
                 }
             }
             catch (SocketException ex)
             {
-                if (ex.ErrorCode != 10004)
+                if (ex.ErrorCode != 10004) //WSACancelBlockingCall
                 {
+                    mw.WriteDebug("WSACancelBlockingCall");
                     throw ex;
                 }
             }
@@ -104,39 +121,54 @@ namespace GUI
             }
             catch (IOException)
             {
-                Console.WriteLine("Client disconnected!");
-                Transfers.Remove(transfer);
+                OnClientDisconnect(transfer);
             }
         }
 
         public void Send(Transfer<MessageContainer> transfer, Message msg)
         {
-            Send(transfer, new MessageContainer() { Messages = new List<Message>() { msg } });
+            Send(transfer, new MessageContainer(msg));
         }
 
         public void SendAll(MessageContainer msgc)
         {
             foreach (var t in Transfers)
-                t.Send(msgc);
+            {
+                Send(t, msgc);
+            }
         }
 
         public void SendAll(Message msg)
         {
-            foreach (var t in Transfers)
-                t.Send(new MessageContainer() { Messages = new List<Message>() { msg } });
+            SendAll(new MessageContainer(msg));
         }
 
         public void Stop()
         {
-            for (int i = 0; i < Transfers.Count; i++)
-                Transfers[i] = null;
             Listener.Stop();
-            Transfers.Clear();
+            lock (__lockTransfers)
+            {
+                for (int i = 0; i < Transfers.Count; i++)
+                {
+                    var t = Transfers[i];
+                    Send(t, new MessageContainer(new ServerDisconnect()));
+                    t.TcpClient.Close();
+                }
+                Transfers.Clear();
+            }
         }
 
-        public TcpListener Listener { get; set; }
-        public List<Transfer<MessageContainer>> Transfers { get; set; } = new List<Transfer<MessageContainer>>();
-        public event MessageReceivedEventHandler MessageReceived;
-        private MainWindow mainWindow;
+        public void OnClientDisconnect(Transfer<MessageContainer> t)
+        {
+            mw.WriteDebug("Client disconnected");
+            lock (__lockTransfers)
+            {
+                Transfers.Remove(t);
+            }
+            SendAll(new UserCount(Transfers.Count + 1));
+            mw.UserCount = Transfers.Count + 1;
+        }
+
+        #endregion Methodes
     }
 }

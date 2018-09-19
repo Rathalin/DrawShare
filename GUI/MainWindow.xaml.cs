@@ -55,7 +55,8 @@ namespace GUI
         private Server server;
         private Client client;
         private int startport = 50000;
-        public Mode ApplicationMode { get; set; } = Mode.Undefined;
+
+        public bool Debugging { get; set; } = true;
 
         private CustomBrush CustomBrush = new CustomBrush(Brushes.Black, 1);
 
@@ -80,6 +81,8 @@ namespace GUI
             }
         }
 
+        public Mode ApplicationMode = Mode.Undefined;
+
         private string _ip;
         public string IP
         {
@@ -103,7 +106,10 @@ namespace GUI
                 _port = value;
                 UseDispatcher(TBl_Info_Port, delegate
                 {
-                    TBl_Info_Port.Text = value.ToString();
+                    if (value > 0)
+                        TBl_Info_Port.Text = value.ToString();
+                    else
+                        TBl_Info_Port.Text = "";
                 });
             }
         }
@@ -227,24 +233,23 @@ namespace GUI
 
         }
 
-        public void Reset()
-        {
-            if (ApplicationMode == Mode.Server)
-                server.Stop();
-            else if (ApplicationMode == Mode.Client)
-                client.Stop();
-            UserCount = 1;
-            Connected = false;
-            IP = "";
-            TBl_Info_Port.Text = "";
-            SP_Board.IsEnabled = true;
-            Btn_LockDrawing.IsEnabled = true;
-        }
-
         public void UseDispatcher(UIElement el, Action func)
         {
             el.Dispatcher.BeginInvoke(
                 DispatcherPriority.Normal,
+                new DispatcherOperationCallback(delegate
+                {
+                    func();
+                    return null;
+                }),
+                null
+            );
+        }
+
+        public void UseDispatcher(UIElement el, DispatcherPriority priority, Action func)
+        {
+            el.Dispatcher.BeginInvoke(
+                priority,
                 new DispatcherOperationCallback(delegate
                 {
                     func();
@@ -300,6 +305,16 @@ namespace GUI
                 client.Send(msg);
         }
 
+        public void WriteDebug(string text)
+        {
+            if (Debugging)
+                UseDispatcher(TBl_Debug, delegate
+                {
+                    TBl_Debug.Text = text;
+                });
+        }
+
+        // MESSAGE RECEIVED
         public void MessageReceived(object sender, MessageReceivedEventArgs e)
         {
             foreach (var m in e.MessageContainer.Messages)
@@ -326,10 +341,16 @@ namespace GUI
                     if (ApplicationMode == Mode.Server)
                         server.SendAll(m);
                 }
-                //client only receives
+
+                //Client only receives
                 else if (ApplicationMode == Mode.Client)
                 {
-                    if (m as DrawLock != null)
+                    if (m as UserCount != null)
+                    {
+                        UserCount userC = (UserCount)m;
+                        UserCount = userC.Count;
+                    }
+                    else if (m as DrawLock != null)
                     {
                         DrawingLocked = true;
                         UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = false; });
@@ -341,13 +362,45 @@ namespace GUI
                         UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = true; });
                         UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = string.Empty; });
                     }
-                    else if (m as UserCount != null)
+                    else if (m as ServerDisconnect != null)
                     {
-                        UserCount userC = (UserCount)m;
-                        UserCount = userC.Count;
+                        client.OnServerDisconnect();
+                    }
+                }
+
+                //Server only receives
+                else if (ApplicationMode == Mode.Server)
+                {
+                    if (m as ClientDisconnect != null)
+                    {
+                        server.OnClientDisconnect((Transfer<MessageContainer>)sender);
                     }
                 }
             }
+        }
+
+        public void ResetConnections()
+        {
+            if (client != null)
+                client.Stop();
+            if (server != null)
+                server.Stop();
+        }
+
+        public void ResetConnectionBar()
+        {
+            if (ApplicationMode != Mode.Undefined)
+            {
+                ApplicationMode = Mode.Undefined;
+                ResetIPPort();
+                Connected = false;
+            }
+        }
+
+        public void ResetIPPort()
+        {
+            IP = "";
+            Port = 0;
         }
 
         #endregion Methodes
@@ -464,7 +517,7 @@ namespace GUI
             }
             catch (InvalidCastException)
             {
-                Console.WriteLine("InvalidCastException");
+                WriteDebug("InvalidCastException");
             }
         }
 
@@ -477,7 +530,7 @@ namespace GUI
             }
             catch (InvalidCastException)
             {
-                Console.WriteLine("InvalidCastException");
+                WriteDebug("InvalidCastException");
             }
         }
 
@@ -485,7 +538,8 @@ namespace GUI
 
         private void MenuItem_Join_Click(object sender, RoutedEventArgs e)
         {
-            Reset();
+            ResetConnections();
+            ResetConnectionBar();
             Btn_LockDrawing.IsEnabled = false;
             DialogChangeConnection dlg = new DialogChangeConnection(
                 Translation.General_Connection, Translation.General_IP, "10.0.0.1",
@@ -508,7 +562,6 @@ namespace GUI
                             Port = dlg.Port;
                             Connected = true;
                             Canvas_Drawing.Children.Clear();
-                            //MI_Share.IsEnabled = false;
                         });
                     }
                     else
@@ -517,23 +570,27 @@ namespace GUI
                         {
                             MessageBox.Show(this, Translation.Dialog_ConnectionError_ErrorMsg, Translation.General_Error,
                                 MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.No, MessageBoxOptions.None);
+                            ResetConnectionBar();
                         });
-                        client.Stop();
                     }
                 });
             }
             else
             {
-                ApplicationMode = Mode.Undefined;
+                ResetConnectionBar();
             }
         }
 
         private void MenuItem_Share_Click(object sender, RoutedEventArgs e)
         {
+            //ResetConnections();
+            if (client != null)
+                client.Stop();
+            string localIP = GetLocalIPAddress();
+            string globalIP = GetGlobalIPAddress();
+            int port = startport;
             if (ApplicationMode != Mode.Server)
             {
-                Reset();
-                int port = startport;
                 Title = "DrawShare - Server";
                 server = new Server(this);
                 while (!server.TryPort(port))
@@ -544,15 +601,17 @@ namespace GUI
                         port++;
                 }
                 ThreadPool.QueueUserWorkItem(delegate { server.Receive(); });
-                Connected = true;
-                Btn_LockDrawing.IsEnabled = true;
-
-                IP = GetGlobalIPAddress();
-                Port = port;
+                UseDispatcher(this, DispatcherPriority.Background, delegate
+                {
+                    Connected = true;
+                    Btn_LockDrawing.IsEnabled = true;
+                    IP = globalIP;
+                    Port = port;
+                });
             }
             DialogConnectionInfo dlg = new DialogConnectionInfo(
                 Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
-                Translation.General_IP, GetLocalIPAddress(), IP, Translation.General_Port, Port, Translation.General_Close);
+                Translation.General_IP, localIP, globalIP, Translation.General_Port, port, Translation.General_Close);
             dlg.Owner = this;
             dlg.Show();
             ApplicationMode = Mode.Server;
@@ -603,7 +662,8 @@ namespace GUI
 
         private void MI_Debug_Click(object sender, RoutedEventArgs e)
         {
-
+            ResetConnectionBar();
+            ResetConnections();
         }
 
         private void Btn_SocialMedia_Click(object sender, RoutedEventArgs e)
@@ -626,6 +686,10 @@ namespace GUI
                 e.Cancel = true;
             }
             */
+            if (ApplicationMode == Mode.Client && client != null)
+                client.Stop();
+            else if (ApplicationMode == Mode.Server && server != null)
+                server.Stop();
         }
     }
     #endregion GUI-Methodes

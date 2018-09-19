@@ -38,6 +38,7 @@
                     </MenuItem>
                     <MenuItem x:Name="MI_Share" Header="Share" Click="MenuItem_Share_Click"></MenuItem>
                     <MenuItem x:Name="MI_Join" Header="Join" Click="MenuItem_Join_Click"></MenuItem>
+                    <MenuItem x:Name="MI_Debug" Header="Reset" Click="MI_Debug_Click"></MenuItem>
                 </Menu>
             </DockPanel>
         </Border>
@@ -50,6 +51,7 @@
                 <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Height="40">
                     <Button x:Name="Btn_LockDrawing" Style="{StaticResource Style_Button_ControlPanel}" Click="Btn_LockDrawing_Click"></Button>
                     <TextBlock x:Name="TBl_ControlPanel" Style="{DynamicResource Style_TextBlock_ControlPanel}"></TextBlock>
+                    <TextBlock x:Name="TBl_Debug" Style="{DynamicResource Style_TextBlock_ControlPanel}"></TextBlock>
                 </StackPanel>
             </DockPanel>
             <StackPanel x:Name="SP_Board" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">

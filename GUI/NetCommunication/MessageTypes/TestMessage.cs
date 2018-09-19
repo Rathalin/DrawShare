@@ -8,7 +8,10 @@ namespace GUI.NetCommunication.MessageTypes
 {
     public class TestMessage : Message
     {
-        public TestMessage() { }
+        public TestMessage()
+        {
+            Text = "";
+        }
 
         public TestMessage(string text)
         {
