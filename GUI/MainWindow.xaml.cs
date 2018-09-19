@@ -332,6 +332,28 @@ namespace GUI
                             new CustomBrush(drawData.Color, drawData.Thickness), drawData.X1, drawData.Y1, drawData.X2, drawData.Y2);
                     });
                 }
+                else if (m as DrawDataBlock != null)
+                {
+                    DrawDataBlock drawDataBlock = (DrawDataBlock)m;
+                    if (ApplicationMode == Mode.Server)
+                    {
+                        server.SendAll(drawDataBlock);
+                    }
+                    UseDispatcher(Canvas_Drawing, delegate
+                    {
+                        foreach (UIElement el in Canvas_Drawing.Children)
+                        {
+                            if (el as TextBlock != null)
+                            {
+                                Canvas_Drawing.Children.Remove(el);
+                                break;
+                            }
+                        }
+                        foreach (var line in drawDataBlock.Lines)
+                            Draw(Canvas_Drawing,
+                                new CustomBrush(drawDataBlock.Color, drawDataBlock.Thickness), line.X1, line.Y1, line.X2, line.Y2);
+                    });
+                }
                 else if (m as DrawClear != null)
                 {
                     UseDispatcher(Canvas_Drawing, delegate
@@ -361,6 +383,20 @@ namespace GUI
                         DrawingLocked = false;
                         UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = true; });
                         UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = string.Empty; });
+                    }
+                    else if (m as DrawDataBlockFlag != null)
+                    {
+                        UseDispatcher(Canvas_Drawing, DispatcherPriority.Send, delegate
+                        {
+                            TextBlock tbl = new TextBlock();
+                            tbl.Text = "Loading ...";
+                            tbl.Foreground = Brushes.DarkBlue;
+                            tbl.FontWeight = FontWeights.SemiBold;
+                            tbl.FontSize = 72;
+                            tbl.SetValue(Canvas.LeftProperty, Canvas_Drawing.ActualWidth / 2);
+                            tbl.SetValue(Canvas.TopProperty, Canvas_Drawing.ActualHeight / 2);
+                            Canvas_Drawing.Children.Add(tbl);
+                        });
                     }
                     else if (m as ServerDisconnect != null)
                     {
@@ -392,15 +428,11 @@ namespace GUI
             if (ApplicationMode != Mode.Undefined)
             {
                 ApplicationMode = Mode.Undefined;
-                ResetIPPort();
                 Connected = false;
+                IP = "";
+                Port = 0;
+                UserCount = 1;
             }
-        }
-
-        public void ResetIPPort()
-        {
-            IP = "";
-            Port = 0;
         }
 
         #endregion Methodes
@@ -456,12 +488,9 @@ namespace GUI
                     Draw(Canvas_Drawing, CustomBrush, mouseLastPosition.X, mouseLastPosition.Y, position.X, position.Y);
                     if (Connected)
                     {
-                        Send(new MessageContainer()
-                        {
-                            Messages = new List<Message>() {
-                                new DrawData(mouseLastPosition.X, mouseLastPosition.Y, position.X, position.Y, CustomBrush.Thickness, CustomBrush.ColorBrush.ToString())
-                            }
-                        });
+                        Send(new MessageContainer(
+                            new DrawData(mouseLastPosition.X, mouseLastPosition.Y, position.X, position.Y, CustomBrush.Thickness, CustomBrush.ColorBrush.ToString())
+                        ));
                     }
                     mouseLastPosition = Mouse.GetPosition(Canvas_Drawing);
                 }
@@ -526,7 +555,7 @@ namespace GUI
             try
             {
                 Button btn = (Button)sender;
-                CustomBrush.ColorBrush = btn.GetValue(BackgroundProperty) as SolidColorBrush;
+                CustomBrush.ColorBrush = btn.Background as SolidColorBrush;
             }
             catch (InvalidCastException)
             {
@@ -629,12 +658,6 @@ namespace GUI
             DrawingLocked = !DrawingLocked;
         }
 
-        /*private void MenuItem_Restart_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
-            Application.Current.Shutdown();
-        }*/
-
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -662,8 +685,7 @@ namespace GUI
 
         private void MI_Debug_Click(object sender, RoutedEventArgs e)
         {
-            ResetConnectionBar();
-            ResetConnections();
+
         }
 
         private void Btn_SocialMedia_Click(object sender, RoutedEventArgs e)

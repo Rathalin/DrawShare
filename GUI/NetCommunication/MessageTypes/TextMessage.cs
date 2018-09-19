@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace GUI.NetCommunication.MessageTypes
 {
-    public class TestMessage : Message
+    public class TextMessage : Message
     {
-        public TestMessage()
+        public TextMessage()
         {
             Text = "";
         }
 
-        public TestMessage(string text)
+        public TextMessage(string text)
         {
             Text = text;
         }

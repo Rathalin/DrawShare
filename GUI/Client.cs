@@ -105,9 +105,7 @@ namespace GUI
             mw.UseDispatcher(mw, DispatcherPriority.Send, delegate
             {
                 mw.WriteDebug("Server disconnected!");
-                mw.ResetIPPort();
-                mw.Connected = false;
-                mw.UserCount = 1;
+                mw.ResetConnectionBar();
                 mw.SP_Board.IsEnabled = true;
                 mw.Btn_LockDrawing.IsEnabled = true;
                 mw.TBl_ControlPanel.Text = "";

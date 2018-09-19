@@ -38,7 +38,7 @@
                     </MenuItem>
                     <MenuItem x:Name="MI_Share" Header="Share" Click="MenuItem_Share_Click"></MenuItem>
                     <MenuItem x:Name="MI_Join" Header="Join" Click="MenuItem_Join_Click"></MenuItem>
-                    <MenuItem x:Name="MI_Debug" Header="Reset" Click="MI_Debug_Click"></MenuItem>
+                    <MenuItem x:Name="MI_Debug" Header="Debug" Click="MI_Debug_Click"></MenuItem>
                 </Menu>
             </DockPanel>
         </Border>

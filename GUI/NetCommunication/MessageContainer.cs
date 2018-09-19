@@ -25,14 +25,16 @@ namespace GUI.NetCommunication
             Messages = new List<Message>() { msg };
         }
 
-        [XmlElement(typeof(TestMessage), ElementName = "TestMessage")]
+        [XmlElement(typeof(TextMessage), ElementName = "TextMessage")]
         [XmlElement(typeof(DrawData), ElementName = "DrawData")]
         [XmlElement(typeof(DrawClear), ElementName = "DrawClear")]
         [XmlElement(typeof(DrawLock), ElementName = "DrawLock")]
         [XmlElement(typeof(DrawUnlock), ElementName = "DrawUnlock")]
         [XmlElement(typeof(UserCount), ElementName = "UserCount")]
         [XmlElement(typeof(ClientDisconnect), ElementName = "ClientDisconnect")]
-        [XmlElement(typeof(ServerDisconnect), ElementName = "ServerDisconnect")]        
+        [XmlElement(typeof(ServerDisconnect), ElementName = "ServerDisconnect")]
+        [XmlElement(typeof(DrawDataBlockFlag), ElementName = "DrawDataBlockFlag")]
+        [XmlElement(typeof(DrawDataBlock), ElementName = "DrawDataBlock")]        
         public List<Message> Messages { get; set; }
     }
 }

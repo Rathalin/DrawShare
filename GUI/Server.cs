@@ -1,6 +1,4 @@
-﻿using GUI.NetCommunication;
-using GUI.NetCommunication.MessageTypes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Shapes;
+using GUI.NetCommunication;
+using GUI.NetCommunication.MessageTypes;
+using System.Windows.Media;
 
 namespace GUI
 {
@@ -65,9 +66,26 @@ namespace GUI
                         Transfers.Add(transfer);
                     transferCount = Transfers.Count + 1;
                     List<Message> msgList = new List<Message>();
+                    List<Message> msgListDrawData = new List<Message>();
                     mw.UseDispatcher(mw.Canvas_Drawing, delegate
                     {
                         //Send init data (all in this thread to avoid race conditions)
+
+                        if (mw.Canvas_Drawing.Children.Count > 0)
+                            msgList.Add(new DrawDataBlockFlag());
+
+                        if (mw.DrawingLocked)
+                            msgList.Add(new DrawLock());
+                        else
+                            msgList.Add(new DrawUnlock());
+                        
+                        Send(transfer, new MessageContainer(msgList));
+
+                        //Update other users
+                        SendAll(new UserCount(transferCount));
+
+                        //Send Drawing Data
+                        /*
                         foreach (var el in mw.Canvas_Drawing.Children)
                         {
                             if (el as Line != null)
@@ -75,15 +93,32 @@ namespace GUI
                                 Line l = (Line)el;
                                 msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
                             }
+                        }                        
+                        */
+                        if (mw.Canvas_Drawing.Children.Count > 0)
+                        {
+                            CustomBrush lastBrush = null;
+                            var lastLines = new List<NetCommunication.MessageTypes.SupportClasses.Line>();
+                            foreach (var el in mw.Canvas_Drawing.Children)
+                            {
+                                if (el as Line != null)
+                                {
+                                    Line l = (Line)el;
+                                    if (lastBrush == null)
+                                        lastBrush = new CustomBrush((SolidColorBrush)l.Stroke, l.StrokeThickness);
+                                    if (l.StrokeThickness != lastBrush.Thickness || l.Stroke != lastBrush.ColorBrush)
+                                    {
+                                        msgListDrawData.Add(new DrawDataBlock(lastBrush.ColorBrush.ToString(), lastBrush.Thickness, new List<NetCommunication.MessageTypes.SupportClasses.Line>(lastLines)));
+                                        lastLines.Clear();
+                                        lastBrush = new CustomBrush((SolidColorBrush)l.Stroke, l.StrokeThickness);
+                                    }
+                                    lastLines.Add(new NetCommunication.MessageTypes.SupportClasses.Line(l.X1, l.Y1, l.X2, l.Y2));
+                                }
+                            }
+                            msgListDrawData.Add(new DrawDataBlock(lastBrush.ColorBrush.ToString(), lastBrush.Thickness, new List<NetCommunication.MessageTypes.SupportClasses.Line>(lastLines)));
                         }
-                        if (mw.DrawingLocked)
-                            msgList.Add(new DrawLock());
-                        else
-                            msgList.Add(new DrawUnlock());
-                        Send(transfer, new MessageContainer(msgList));
 
-                        //Update other users
-                        SendAll(new UserCount(transferCount));
+                        Send(transfer, new MessageContainer(msgListDrawData));
                     });
 
                     ThreadPool.QueueUserWorkItem(delegate
