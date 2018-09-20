@@ -25,11 +25,11 @@ To use the program with others that are not in your local network an extra step 
 1. Search for the feature "Port Forwarding" (likely under the tab "Security" or "Internet")
 1. Fill in the form with following data:
 
-  - Protocol: TCP
-  - WAN Host IP: 0.0.0.0
-  - LAN Host IP Address: \<**local** ipv4 address of your computer>
-  - WAN Port: \<port>
-  - LAN Host Port: \<port>
+    - Protocol: TCP
+    - WAN Host IP: 0.0.0.0
+    - LAN Host IP Address: \<**local** ipv4 address of your computer>
+    - WAN Port: \<port>
+    - LAN Host Port: \<port>
   
   If the router interface requires a range (eg. WAN Host IP Range) just type in the value twice:
   WAN Host IP Range: 0.0.0.0 ~ 0.0.0.0
