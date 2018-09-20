@@ -31,6 +31,8 @@ To use the program with others that are not in your local network an extra step 
     - WAN Port: \<port>
     - LAN Host Port: \<port>
   
+  **Hints:**
+  The program uses port 5000 (on default as long as you only start one program in share mode).
   If the router interface requires a range (eg. WAN Host IP Range) just type in the value twice:
   WAN Host IP Range: 0.0.0.0 ~ 0.0.0.0
   
