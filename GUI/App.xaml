@@ -151,6 +151,8 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
+        
+        <!-- TextBlock -->
 
         <Style x:Key="Style_TextBlock_ControlPanel" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center"></Setter>
@@ -166,7 +168,18 @@
             <Setter Property="Margin" Value="0,0,5,0"></Setter>
             <Setter Property="TextAlignment" Value="Right"></Setter>
             <Setter Property="FontWeight" Value="Bold"></Setter>
-            <Setter Property="Foreground" Value="DarkBlue"></Setter>
+            <Setter Property="Foreground" Value="Black"></Setter>
+        </Style>
+
+        <Style x:Key="Style_TextBlock_Loading" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="TextAlignment" Value="Center"></Setter>
+            <Setter Property="FontWeight" Value="SemiBold"></Setter>
+            <Setter Property="FontSize" Value="20"></Setter>
+            <Setter Property="FontStyle" Value="Normal"></Setter>
+            <Setter Property="Height" Value="30"></Setter>
+            <Setter Property="Width" Value="400"></Setter>
         </Style>
         
     </Application.Resources>

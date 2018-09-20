@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using GUI.NetCommunication;
 using GUI.NetCommunication.MessageTypes;
 using System.Windows.Media;
+using static GUI.Enums;
 
 namespace GUI
 {
@@ -48,6 +49,7 @@ namespace GUI
             }
             catch (SocketException)
             {
+                mw.WriteDebug("SocketException in Server.TryPort", LogLevel.Debug);
                 return false;
             }
             return true;
@@ -60,43 +62,54 @@ namespace GUI
                 while (true)
                 {
                     Transfer<MessageContainer> transfer = new Transfer<MessageContainer>(Listener.AcceptTcpClient());
-                    mw.WriteDebug("Client connected");
+                    mw.WriteDebug("Client connected", LogLevel.Info);
                     int transferCount;
                     lock (__lockTransfers)
                         Transfers.Add(transfer);
                     transferCount = Transfers.Count + 1;
-                    List<Message> msgList = new List<Message>();
-                    List<Message> msgListDrawData = new List<Message>();
+
                     mw.UseDispatcher(mw.Canvas_Drawing, delegate
                     {
-                        //Send init data (all in this thread to avoid race conditions)
+                        var msgList = new List<Message>();
 
-                        if (mw.Canvas_Drawing.Children.Count > 0)
+                        if (mw.Canvas_Drawing.Children.Count < 1000) // Init with normal DrawData
+                        {
+                            //Send Drawing Data
+
+                            foreach (var el in mw.Canvas_Drawing.Children)
+                            {
+                                if (el as Line != null)
+                                {
+                                    Line l = (Line)el;
+                                    msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
+                                }
+                            }
+
+                            if (mw.DrawingLocked)
+                                msgList.Add(new DrawLock());
+                            else
+                                msgList.Add(new DrawUnlock());
+
+                            Send(transfer, new MessageContainer(msgList));
+
+                            //Update other users
+                            SendAll(new UserCount(transferCount));
+                        }
+                        else // Init with async DrawDataBlock
+                        {
+                            var msgListDrawData = new List<Message>();
                             msgList.Add(new DrawDataBlockFlag());
 
-                        if (mw.DrawingLocked)
-                            msgList.Add(new DrawLock());
-                        else
-                            msgList.Add(new DrawUnlock());
-                        
-                        Send(transfer, new MessageContainer(msgList));
+                            if (mw.DrawingLocked)
+                                msgList.Add(new DrawLock());
+                            //send no DrawUnlock to ensure the board is locked until DrawDataBlock
 
-                        //Update other users
-                        SendAll(new UserCount(transferCount));
+                            Send(transfer, new MessageContainer(msgList));
 
-                        //Send Drawing Data
-                        /*
-                        foreach (var el in mw.Canvas_Drawing.Children)
-                        {
-                            if (el as Line != null)
-                            {
-                                Line l = (Line)el;
-                                msgList.Add(new DrawData(l.X1, l.Y1, l.X2, l.Y2, (double)l.GetValue(Shape.StrokeThicknessProperty), l.GetValue(Shape.StrokeProperty).ToString()));
-                            }
-                        }                        
-                        */
-                        if (mw.Canvas_Drawing.Children.Count > 0)
-                        {
+                            //Update other users
+                            SendAll(new UserCount(transferCount));
+
+                            //Send DrawDataBlock
                             CustomBrush lastBrush = null;
                             var lastLines = new List<NetCommunication.MessageTypes.SupportClasses.Line>();
                             foreach (var el in mw.Canvas_Drawing.Children)
@@ -116,11 +129,12 @@ namespace GUI
                                 }
                             }
                             msgListDrawData.Add(new DrawDataBlock(lastBrush.ColorBrush.ToString(), lastBrush.Thickness, new List<NetCommunication.MessageTypes.SupportClasses.Line>(lastLines)));
-                        }
 
-                        Send(transfer, new MessageContainer(msgListDrawData));
+                            Send(transfer, new MessageContainer(msgListDrawData));
+                        }
                     });
 
+                    //Start Receiver-Thread
                     ThreadPool.QueueUserWorkItem(delegate
                     {
                         try
@@ -133,6 +147,7 @@ namespace GUI
                         catch (IOException)
                         {
                             OnClientDisconnect(transfer);
+                            mw.WriteDebug("IOException in Server.Receive in transfer.Receive", LogLevel.Debug);
                         }
                     });
                     mw.UseDispatcher(mw.TBl_UserCount, delegate { mw.TBl_UserCount.Text = (transferCount).ToString(); });
@@ -142,7 +157,7 @@ namespace GUI
             {
                 if (ex.ErrorCode != 10004) //WSACancelBlockingCall
                 {
-                    mw.WriteDebug("WSACancelBlockingCall");
+                    mw.WriteDebug("WSACancelBlockingCall in Server.Recieve", LogLevel.Debug);
                     throw ex;
                 }
             }
@@ -157,6 +172,7 @@ namespace GUI
             catch (IOException)
             {
                 OnClientDisconnect(transfer);
+                mw.WriteDebug("IOException in Server.Send", LogLevel.Debug);
             }
         }
 
@@ -195,7 +211,7 @@ namespace GUI
 
         public void OnClientDisconnect(Transfer<MessageContainer> t)
         {
-            mw.WriteDebug("Client disconnected");
+            mw.WriteDebug("Client disconnected", LogLevel.Info);
             lock (__lockTransfers)
             {
                 Transfers.Remove(t);

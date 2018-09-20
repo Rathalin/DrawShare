@@ -21,6 +21,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Diagnostics;
+using static GUI.Enums;
 
 namespace GUI
 {
@@ -40,28 +42,37 @@ namespace GUI
             InitValues();
             Translation = Languages.English;
             ToolTipService.SetShowOnDisabled(Btn_LockDrawing, true);
+
+            DebugLevel = LogLevel.Debug;
+
+            var ffArray = Fonts.SystemFontFamilies;
+            foreach (FontFamily ff in ffArray)
+            {
+                InstalledFontFamilies.Add(ff.ToString());
+            }
         }
 
         #endregion Constructors
 
-        #region Enums
-
-        public enum Mode { Undefined, Server, Client }
-
-        #endregion Enums
-
         #region Attributes and Variables
+
+        public static List<string> InstalledFontFamilies = new List<string>();
+        public static Random Random = new Random();
+
+        private Thread stopwatchLoading;
 
         private Server server;
         private Client client;
         private int startport = 50000;
 
-        public bool Debugging { get; set; } = true;
-
-        private CustomBrush CustomBrush = new CustomBrush(Brushes.Black, 1);
+        private CustomBrush CustomBrush = new CustomBrush(Brushes.Black, 2);
 
         private bool mouseDrawing = false;
         private Point mouseLastPosition;
+        private Point mouseLastEllipsePosition;
+
+        public Mode ApplicationMode { get; set; } = Mode.Undefined;
+        public LogLevel DebugLevel { get; set; } = LogLevel.Debug;
 
         private bool _drawingLocked;
         public bool DrawingLocked
@@ -80,8 +91,6 @@ namespace GUI
 
             }
         }
-
-        public Mode ApplicationMode = Mode.Undefined;
 
         private string _ip;
         public string IP
@@ -293,7 +302,7 @@ namespace GUI
             }
             catch (ResourceReferenceKeyNotFoundException)
             {
-                MessageBox.Show("Theme could not be found. What poor programming!");
+                WriteDebug("ResourceReferenceKeyNotFoundException in SetTheme", LogLevel.Error);
             }
         }
 
@@ -305,13 +314,71 @@ namespace GUI
                 client.Send(msg);
         }
 
-        public void WriteDebug(string text)
+        public void WriteDebug(string text, LogLevel loglvl)
         {
-            if (Debugging)
+            if (loglvl <= DebugLevel)
+            {
                 UseDispatcher(TBl_Debug, delegate
                 {
-                    TBl_Debug.Text = text;
+                    TBl_Debug.Text = string.Format("{0}: {1}", loglvl, text);
                 });
+                Console.WriteLine(string.Format("{0}: {1}", loglvl, text));
+            }
+        }
+
+        private void StartLoading()
+        {
+            UseDispatcher(SP_Board, DispatcherPriority.Normal, delegate
+            {
+                TextBlock tbl = new TextBlock();
+                tbl.Style = FindResource("Style_TextBlock_Loading") as Style;
+                tbl.SetValue(Canvas.LeftProperty, Canvas_Drawing.ActualWidth / 2 - tbl.Width / 2);
+                tbl.SetValue(Canvas.TopProperty, Canvas_Drawing.ActualHeight / 2 - tbl.Height / 2);
+                Canvas_Drawing.Children.Add(tbl);
+                SP_Board.IsEnabled = false;
+                stopwatchLoading = new Thread(new ThreadStart(delegate
+                {
+                    int i = 0;
+                    while (true)
+                    {
+                        UseDispatcher(tbl, delegate
+                        {
+                            tbl.Text = string.Format("Loading({0}s) ...", i);
+                            i++;
+                        });
+                        Thread.Sleep(1000);
+                    }
+                }));
+                stopwatchLoading.Start();
+            });
+        }
+
+        private void StopLoading()
+        {
+            stopwatchLoading.Abort();
+            UseDispatcher(Canvas_Drawing, delegate
+            {
+                foreach (UIElement el in Canvas_Drawing.Children)
+                {
+                    if (el as TextBlock != null)
+                    {
+                        Canvas_Drawing.Children.Remove(el);
+                        break;
+                    }
+                }
+            });
+            UseDispatcher(this, delegate
+            {
+                SP_Board.IsEnabled = true;
+            });
+        }
+
+        private void CleanUp()
+        {
+            if (stopwatchLoading != null)
+            {
+                stopwatchLoading.Abort();
+            }
         }
 
         // MESSAGE RECEIVED
@@ -330,28 +397,6 @@ namespace GUI
                     {
                         Draw(Canvas_Drawing,
                             new CustomBrush(drawData.Color, drawData.Thickness), drawData.X1, drawData.Y1, drawData.X2, drawData.Y2);
-                    });
-                }
-                else if (m as DrawDataBlock != null)
-                {
-                    DrawDataBlock drawDataBlock = (DrawDataBlock)m;
-                    if (ApplicationMode == Mode.Server)
-                    {
-                        server.SendAll(drawDataBlock);
-                    }
-                    UseDispatcher(Canvas_Drawing, delegate
-                    {
-                        foreach (UIElement el in Canvas_Drawing.Children)
-                        {
-                            if (el as TextBlock != null)
-                            {
-                                Canvas_Drawing.Children.Remove(el);
-                                break;
-                            }
-                        }
-                        foreach (var line in drawDataBlock.Lines)
-                            Draw(Canvas_Drawing,
-                                new CustomBrush(drawDataBlock.Color, drawDataBlock.Thickness), line.X1, line.Y1, line.X2, line.Y2);
                     });
                 }
                 else if (m as DrawClear != null)
@@ -386,17 +431,24 @@ namespace GUI
                     }
                     else if (m as DrawDataBlockFlag != null)
                     {
-                        UseDispatcher(Canvas_Drawing, DispatcherPriority.Send, delegate
+                        StartLoading();
+                        UseDispatcher(TBl_ControlPanel, delegate { WriteDebug("DrawDataBlock Flag", LogLevel.Debug); });
+                    }
+                    else if (m as DrawDataBlock != null)
+                    {
+                        DrawDataBlock drawDataBlock = (DrawDataBlock)m;
+                        if (ApplicationMode == Mode.Server)
                         {
-                            TextBlock tbl = new TextBlock();
-                            tbl.Text = "Loading ...";
-                            tbl.Foreground = Brushes.DarkBlue;
-                            tbl.FontWeight = FontWeights.SemiBold;
-                            tbl.FontSize = 72;
-                            tbl.SetValue(Canvas.LeftProperty, Canvas_Drawing.ActualWidth / 2);
-                            tbl.SetValue(Canvas.TopProperty, Canvas_Drawing.ActualHeight / 2);
-                            Canvas_Drawing.Children.Add(tbl);
+                            server.SendAll(drawDataBlock);
+                        }
+                        StopLoading();
+                        UseDispatcher(SP_Board, delegate
+                        {
+                            foreach (var line in drawDataBlock.Lines)
+                                Draw(Canvas_Drawing,
+                                    new CustomBrush(drawDataBlock.Color, drawDataBlock.Thickness), line.X1, line.Y1, line.X2, line.Y2);
                         });
+                        UseDispatcher(TBl_ControlPanel, delegate { WriteDebug("DrawDataBlock", LogLevel.Debug); });
                     }
                     else if (m as ServerDisconnect != null)
                     {
@@ -452,10 +504,13 @@ namespace GUI
                 X2 = x2,
                 Y2 = y2
             });
+            //Console.WriteLine(string.Format("{0}:{1} -> {2}:{3}", x1, y1, x2, y2));
         }
 
         private void DrawEllipse(Canvas target, CustomBrush brush, double x1, double y1)
         {
+            mouseLastEllipsePosition.X = x1;
+            mouseLastEllipsePosition.Y = y1;
             Ellipse ell = new Ellipse()
             {
                 Stroke = brush.ColorBrush,
@@ -472,13 +527,20 @@ namespace GUI
         {
             DrawEllipse(target, brush, x1, y1);
             DrawLine(target, brush, x1, y1, x2, y2);
+            /*
+            UseDispatcher(TBl_Debug, DispatcherPriority.Loaded, delegate
+            {
+                drawCount += 2;
+                TBl_Debug.Text = drawCount.ToString();
+            });
+            */
         }
 
         private void Canvas_Drawing_MouseMove(object sender, MouseEventArgs e)
         {
+            Point position = Mouse.GetPosition(Canvas_Drawing);
             if (mouseDrawing)
             {
-                Point position = Mouse.GetPosition(Canvas_Drawing);
                 if (mouseLastPosition.X == -1 && mouseLastPosition.Y == -1)
                 {
                     mouseLastPosition = position;
@@ -492,7 +554,7 @@ namespace GUI
                             new DrawData(mouseLastPosition.X, mouseLastPosition.Y, position.X, position.Y, CustomBrush.Thickness, CustomBrush.ColorBrush.ToString())
                         ));
                     }
-                    mouseLastPosition = Mouse.GetPosition(Canvas_Drawing);
+                    mouseLastPosition = position;
                 }
             }
         }
@@ -500,8 +562,13 @@ namespace GUI
         private void Canvas_Drawing_MouseDown(object sender, MouseButtonEventArgs e)
         {
             mouseDrawing = true;
-            mouseLastPosition = Mouse.GetPosition(Canvas_Drawing);
-            DrawEllipse(Canvas_Drawing, CustomBrush, mouseLastPosition.X, mouseLastPosition.Y);
+            Point currentPosition = Mouse.GetPosition(Canvas_Drawing);
+            mouseLastPosition = currentPosition;
+            if (mouseLastEllipsePosition.X != currentPosition.X && mouseLastEllipsePosition.Y != currentPosition.Y)
+            {
+                DrawEllipse(Canvas_Drawing, CustomBrush, mouseLastPosition.X, mouseLastPosition.Y);
+                mouseLastEllipsePosition = currentPosition;
+            }
         }
 
         private void Canvas_Drawing_MouseUp(object sender, MouseButtonEventArgs e)
@@ -543,10 +610,11 @@ namespace GUI
                 Button btn = (Button)sender;
                 Shape shape = (Shape)btn.Content;
                 CustomBrush.Thickness = (double)shape.GetValue(HeightProperty);
+                WriteDebug("CUstomBrush.Thickness: " + CustomBrush.Thickness.ToString(), LogLevel.Debug);
             }
             catch (InvalidCastException)
             {
-                WriteDebug("InvalidCastException");
+                WriteDebug("InvalidCastException in Btn_Thickness_Click", LogLevel.Debug);
             }
         }
 
@@ -559,7 +627,7 @@ namespace GUI
             }
             catch (InvalidCastException)
             {
-                WriteDebug("InvalidCastException");
+                WriteDebug("InvalidCastException in Btn_ColorPicker_Click", LogLevel.Debug);
             }
         }
 
@@ -685,7 +753,23 @@ namespace GUI
 
         private void MI_Debug_Click(object sender, RoutedEventArgs e)
         {
-
+            TextBlock tblFound = null;
+            foreach (UIElement el in Canvas_Drawing.Children)
+            {
+                if (el as TextBlock != null)
+                {
+                    tblFound = (TextBlock)el;
+                    break;
+                }
+            }
+            if (tblFound == null)
+            {
+                StartLoading();
+            }
+            else
+            {
+                StopLoading();
+            }
         }
 
         private void Btn_SocialMedia_Click(object sender, RoutedEventArgs e)
@@ -701,6 +785,12 @@ namespace GUI
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (ApplicationMode == Mode.Client && client != null)
+                client.Stop();
+            else if (ApplicationMode == Mode.Server && server != null)
+                server.Stop();
+
+            CleanUp();
             /*
             if (MessageBox.Show(this, Translation.ExitDlg_Text, Translation.ExitDlg_Caption, MessageBoxButton.YesNo,
                 MessageBoxImage.Question, MessageBoxResult.No, MessageBoxOptions.None) == MessageBoxResult.No)
@@ -708,10 +798,6 @@ namespace GUI
                 e.Cancel = true;
             }
             */
-            if (ApplicationMode == Mode.Client && client != null)
-                client.Stop();
-            else if (ApplicationMode == Mode.Server && server != null)
-                server.Stop();
         }
     }
     #endregion GUI-Methodes

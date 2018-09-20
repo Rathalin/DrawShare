@@ -11,6 +11,7 @@ using GUI.NetCommunication.MessageTypes;
 using System.Windows;
 using static GUI.MainWindow;
 using System.Windows.Threading;
+using static GUI.Enums;
 
 namespace GUI
 {
@@ -42,6 +43,7 @@ namespace GUI
             }
             catch (SocketException)
             {
+                mw.WriteDebug("SocketException in Client.TryConnect", LogLevel.Debug);
                 return false;
             }
             return true;
@@ -60,16 +62,18 @@ namespace GUI
                     catch (IOException) //Server gone without sending ServerDisconnect-Message
                     {
                         OnServerDisconnect();
+                        mw.WriteDebug("IOException in Client.Connect", LogLevel.Debug);
                     }
                     catch (InvalidOperationException)
                     {
-                        mw.WriteDebug("InvalidOperationException???");
+                        mw.WriteDebug("InvalidOperationException in Client.Connect", LogLevel.Debug);
                     }
                 }
             }
             catch (SocketException)
             {
                 OnServerDisconnect();
+                mw.WriteDebug("SocketException in Client.Connect", LogLevel.Debug);
             }
         }
 
@@ -82,6 +86,7 @@ namespace GUI
             catch (IOException)
             {
                 OnServerDisconnect();
+                mw.WriteDebug("IOException in Client.Send", LogLevel.Debug);
             }
         }
 
@@ -104,7 +109,7 @@ namespace GUI
         {
             mw.UseDispatcher(mw, DispatcherPriority.Send, delegate
             {
-                mw.WriteDebug("Server disconnected!");
+                mw.WriteDebug("Server disconnected!", LogLevel.Info);
                 mw.ResetConnectionBar();
                 mw.SP_Board.IsEnabled = true;
                 mw.Btn_LockDrawing.IsEnabled = true;

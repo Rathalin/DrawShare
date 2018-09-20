@@ -85,6 +85,7 @@
     <Compile Include="Dialogs\DialogConnectionInfo.xaml.cs">
       <DependentUpon>DialogConnectionInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Enums.cs" />
     <Compile Include="LanguagePacks\Languages.cs" />
     <Compile Include="LanguagePacks\Language.cs" />
     <Compile Include="NetCommunication\DisconnectedException.cs" />

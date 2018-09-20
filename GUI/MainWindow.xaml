@@ -48,9 +48,9 @@
                     <Button x:Name="Btn_Github" Style="{DynamicResource Style_Button_SocialMedia}" Click="Btn_SocialMedia_Click"></Button>
                     <Button x:Name="Btn_Twitter" Style="{DynamicResource Style_Button_SocialMedia}" Click="Btn_SocialMedia_Click"></Button>
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Height="40">
+                <StackPanel Orientation="Horizontal" Height="40">
                     <Button x:Name="Btn_LockDrawing" Style="{StaticResource Style_Button_ControlPanel}" Click="Btn_LockDrawing_Click"></Button>
-                    <TextBlock x:Name="TBl_ControlPanel" Style="{DynamicResource Style_TextBlock_ControlPanel}"></TextBlock>
+                    <TextBlock x:Name="TBl_ControlPanel" Style="{DynamicResource Style_TextBlock_ControlPanel}" Foreground="Black"></TextBlock>
                     <TextBlock x:Name="TBl_Debug" Style="{DynamicResource Style_TextBlock_ControlPanel}"></TextBlock>
                 </StackPanel>
             </DockPanel>
