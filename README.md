@@ -21,9 +21,9 @@ Using the program in your local network is very easy as explained above.
 
 To use the program with others that are not in your local network an extra step is needed: Port Forwarding. Every router interface is different but this may help you:
 
-* Go into your router interface by typing your router-ip (gateway) into your browser.
-* Search for the feature "Port Forwarding" (likely under the tab "Security" or "Internet")
-* Fill in the form with following data:
+1. Go into your router interface by typing your router-ip (gateway) into your browser.
+1. Search for the feature "Port Forwarding" (likely under the tab "Security" or "Internet")
+1. Fill in the form with following data:
 
   - Protocol: TCP
   - WAN Host IP: 0.0.0.0
