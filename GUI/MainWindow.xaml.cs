@@ -43,7 +43,7 @@ namespace GUI
             Translation = Languages.English;
             ToolTipService.SetShowOnDisabled(Btn_LockDrawing, true);
 
-            DebugLevel = LogLevel.Debug;
+            DebugLevel = LogLevel.NoLog;
 
             var ffArray = Fonts.SystemFontFamilies;
             foreach (FontFamily ff in ffArray)
@@ -654,7 +654,7 @@ namespace GUI
                         ThreadPool.QueueUserWorkItem(delegate { client.Connect(); });
                         UseDispatcher(this, delegate
                         {
-                            Title = "DrawShare - Client";
+                            //Title = "DrawShare - Client";
                             IP = dlg.IPAddress;
                             Port = dlg.Port;
                             Connected = true;
@@ -665,7 +665,7 @@ namespace GUI
                     {
                         UseDispatcher(this, delegate
                         {
-                            MessageBox.Show(this, Translation.Dialog_ConnectionError_ErrorMsg, Translation.General_Error,
+                            MessageBox.Show(this, Translation.Dialog_ClientConnectionError_ErrorMsg, Translation.General_Error,
                                 MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.No, MessageBoxOptions.None);
                             ResetConnectionBar();
                         });
@@ -683,35 +683,43 @@ namespace GUI
             //ResetConnections();
             if (client != null)
                 client.Stop();
-            string localIP = GetLocalIPAddress();
-            string globalIP = GetGlobalIPAddress();
-            int port = startport;
-            if (ApplicationMode != Mode.Server)
+            try
             {
-                Title = "DrawShare - Server";
-                server = new Server(this);
-                while (!server.TryPort(port))
+                string localIP = GetLocalIPAddress();
+                string globalIP = GetGlobalIPAddress();
+                int port = startport;
+                if (ApplicationMode != Mode.Server)
                 {
-                    if (port >= 65535)
-                        port = 55550;
-                    else
-                        port++;
+                    //Title = "DrawShare - Server";
+                    server = new Server(this);
+                    while (!server.TryPort(port))
+                    {
+                        if (port >= 65535)
+                            port = 55550;
+                        else
+                            port++;
+                    }
+                    ThreadPool.QueueUserWorkItem(delegate { server.Receive(); });
+                    UseDispatcher(this, DispatcherPriority.Background, delegate
+                    {
+                        Connected = true;
+                        Btn_LockDrawing.IsEnabled = true;
+                        IP = globalIP;
+                        Port = port;
+                    });
                 }
-                ThreadPool.QueueUserWorkItem(delegate { server.Receive(); });
-                UseDispatcher(this, DispatcherPriority.Background, delegate
-                {
-                    Connected = true;
-                    Btn_LockDrawing.IsEnabled = true;
-                    IP = globalIP;
-                    Port = port;
-                });
+                DialogConnectionInfo dlg = new DialogConnectionInfo(
+                    Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
+                    Translation.General_IP, localIP, globalIP, Translation.General_Port, port, Translation.General_Close);
+                dlg.Owner = this;
+                dlg.Show();
+                ApplicationMode = Mode.Server;
             }
-            DialogConnectionInfo dlg = new DialogConnectionInfo(
-                Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
-                Translation.General_IP, localIP, globalIP, Translation.General_Port, port, Translation.General_Close);
-            dlg.Owner = this;
-            dlg.Show();
-            ApplicationMode = Mode.Server;
+            catch (WebException)
+            {
+                MessageBox.Show(Translation.Dialog_ServerConnectionError_ErrorMsg, Translation.General_Error, MessageBoxButton.OK, MessageBoxImage.Error);
+                WriteDebug("WebException in MenuItem_Share_Click", LogLevel.Error);
+            }
         }
 
         private void Btn_LockDrawing_Click(object sender, RoutedEventArgs e)
@@ -749,27 +757,6 @@ namespace GUI
         private void MI_Language_German_Click(object sender, RoutedEventArgs e)
         {
             Translation = Languages.German;
-        }
-
-        private void MI_Debug_Click(object sender, RoutedEventArgs e)
-        {
-            TextBlock tblFound = null;
-            foreach (UIElement el in Canvas_Drawing.Children)
-            {
-                if (el as TextBlock != null)
-                {
-                    tblFound = (TextBlock)el;
-                    break;
-                }
-            }
-            if (tblFound == null)
-            {
-                StartLoading();
-            }
-            else
-            {
-                StopLoading();
-            }
         }
 
         private void Btn_SocialMedia_Click(object sender, RoutedEventArgs e)

@@ -51,7 +51,8 @@ namespace GUI.LanguagePacks
             Dialog_ConnectionInfo_Infotext = "Others can connect to you by using this data.",
             Dialog_ChangeConnection_InvalidIP = "Invalid IP",
             Dialog_ChangeConnection_InvalidPort = "Invalid Port",
-            Dialog_ConnectionError_ErrorMsg = "Failed to establish a connection to your partner!",
+            Dialog_ClientConnectionError_ErrorMsg = "Failed to establish a connection to your partner!",
+            Dialog_ServerConnectionError_ErrorMsg = "Please check your internet connection!",
 
             ExitDlg_Text = "Do you really want to exit?",
             ExitDlg_Caption = "Exit"
@@ -99,8 +100,9 @@ namespace GUI.LanguagePacks
             Dialog_ConnectionInfo_Infotext = "Mit diesen Daten können sich andere mit dir verbinden.",
             Dialog_ChangeConnection_InvalidIP = "Ungültige IP-Adresse",
             Dialog_ChangeConnection_InvalidPort = "Ungültiger Port",
-            Dialog_ConnectionError_ErrorMsg = "Es konnte keine Verbindung zum Partner hergestellt werden!",
-
+            Dialog_ClientConnectionError_ErrorMsg = "Es konnte keine Verbindung zum Partner hergestellt werden!",
+            Dialog_ServerConnectionError_ErrorMsg = "Bitte überprüfe deine Internetverbindung!",
+            
             ExitDlg_Text = "Wirklich beenden?",
             ExitDlg_Caption = "Beenden"
         };

@@ -75,7 +75,8 @@ namespace GUI.LanguagePacks
         #endregion Dialog ChangeConnection
 
         #region Dialog ConnectionError
-        public string Dialog_ConnectionError_ErrorMsg { get; set; }
+        public string Dialog_ClientConnectionError_ErrorMsg { get; set; }
+        public string Dialog_ServerConnectionError_ErrorMsg { get; set; }
         #endregion Dialog ConnectionError
 
         #endregion Dialogs
