@@ -8,6 +8,7 @@ The idea came to my mind when i was talking to friends online: one of them tried
 
 ## Ussage :wrench:
 
+To start DrawShare simply download the exe-file and open it (https://github.com/Rhatalin/DrawShare/releases).
 To connect with others one person needs to **share** his drawing board and then others can **join**.
 
 * Share Mode: You become the host and friends can join via the shown ipaddress and port.
@@ -21,16 +22,18 @@ Using the program in your local network is very easy as explained above.
 
 To use the program with others that are not in your local network an extra step is needed: Port Forwarding. Every router interface is different but this may help you:
 
-* Go into your router interface by typing your router-ip (gateway) into your browser.
-* Search for the feature "Port Forwarding" (likely under the tab "Security" or "Internet")
-* Fill in the form with following data:
+1. Go into your router interface by typing your router-ip (gateway) into your browser.
+1. Search for the feature "Port Forwarding" (likely under the tab "Security" or "Internet")
+1. Fill in the form with following data:
 
-  - Protocol: TCP
-  - WAN Host IP: 0.0.0.0
-  - LAN Host IP Address: \<**local** ipv4 address of your computer>
-  - WAN Port: \<port>
-  - LAN Host Port: \<port>
+    - Protocol: TCP
+    - WAN Host IP: 0.0.0.0
+    - LAN Host IP Address: \<**local** ipv4 address of your computer>
+    - WAN Port: \<port>
+    - LAN Host Port: \<port>
   
+  **Hints:**
+  The program uses port 5000 on default (as long as you only start one program in share mode).
   If the router interface requires a range (eg. WAN Host IP Range) just type in the value twice:
   WAN Host IP Range: 0.0.0.0 ~ 0.0.0.0
   
