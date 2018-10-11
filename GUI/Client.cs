@@ -43,7 +43,7 @@ namespace GUI
             }
             catch (SocketException)
             {
-                mw.WriteDebug("SocketException in Client.TryConnect", LogLevel.Debug);
+                mw.WriteDebug("SocketException in Client.TryConnect", LogLevels.Debug);
                 return false;
             }
             return true;
@@ -62,18 +62,18 @@ namespace GUI
                     catch (IOException) //Server gone without sending ServerDisconnect-Message
                     {
                         OnServerDisconnect();
-                        mw.WriteDebug("IOException in Client.Connect", LogLevel.Debug);
+                        mw.WriteDebug("IOException in Client.Connect", LogLevels.Debug);
                     }
                     catch (InvalidOperationException)
                     {
-                        mw.WriteDebug("InvalidOperationException in Client.Connect", LogLevel.Debug);
+                        mw.WriteDebug("InvalidOperationException in Client.Connect", LogLevels.Debug);
                     }
                 }
             }
             catch (SocketException)
             {
                 OnServerDisconnect();
-                mw.WriteDebug("SocketException in Client.Connect", LogLevel.Debug);
+                mw.WriteDebug("SocketException in Client.Connect", LogLevels.Debug);
             }
         }
 
@@ -86,7 +86,7 @@ namespace GUI
             catch (IOException)
             {
                 OnServerDisconnect();
-                mw.WriteDebug("IOException in Client.Send", LogLevel.Debug);
+                mw.WriteDebug("IOException in Client.Send", LogLevels.Debug);
             }
         }
 
@@ -109,7 +109,7 @@ namespace GUI
         {
             mw.UseDispatcher(mw, DispatcherPriority.Send, delegate
             {
-                mw.WriteDebug("Server disconnected!", LogLevel.Info);
+                mw.WriteDebug("Server disconnected!", LogLevels.Info);
                 mw.ResetConnectionBar();
                 mw.SP_Board.IsEnabled = true;
                 mw.Btn_LockDrawing.IsEnabled = true;

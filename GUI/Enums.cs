@@ -8,7 +8,8 @@ namespace GUI
 {
     public static class Enums
     {
-        public enum Mode { Undefined, Server, Client }
-        public enum LogLevel { NoLog, Error, Warning, Info, Debug }
+        public enum Modes { Undefined, Server, Client }
+        public enum LogLevels { NoLog, Error, Warning, Info, Debug }
+        public enum ConnectionStatus { Disconnected, ClientConnecting, ClientConnected, ServerConnecting, ServerOnline}
     }
 }

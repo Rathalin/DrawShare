@@ -8,7 +8,7 @@ namespace GUI.LanguagePacks
 {
     public static class Languages
     {
-
+        
         public static Language English = new Language()
         {
             General_Cancel = "Cancel",
@@ -40,19 +40,22 @@ namespace GUI.LanguagePacks
 
             Connection_TBl_IP = "IP",
             Connection_TBl_Port = "Port",
-            Connection_Status_Connected = "Connected",
             Connection_Status_Disconnected = "Disconnected",
-            
+            Connection_Status_ClientConnecting = "Connecting...",
+            Connection_Status_ClientConnected = "Connected",
+            Connection_Status_ServerConnecting = "Connecting...",
+            Connection_Status_ServerOnline = "Online",
+
             PaintMenu_Clear_Tooltip = "Clear the drawing board",
-            
+
             ControlMenu_Lock_Tooltip = "(Un)lock the drawing board for others",
             ControlMenu_Lock_Text = "The host has locked the drawing board for others!",
-            
+
             Dialog_ConnectionInfo_Infotext = "Others can connect to you by using this data.",
             Dialog_ChangeConnection_InvalidIP = "Invalid IP",
             Dialog_ChangeConnection_InvalidPort = "Invalid Port",
             Dialog_ClientConnectionError_ErrorMsg = "Failed to establish a connection to your partner!",
-            Dialog_ServerConnectionError_ErrorMsg = "Please check your internet connection!",
+            Dialog_ServerConnectionError_ErrorMsg = "No internet connection! You are only visible in your local network!",
 
             ExitDlg_Text = "Do you really want to exit?",
             ExitDlg_Caption = "Exit"
@@ -89,20 +92,23 @@ namespace GUI.LanguagePacks
 
             Connection_TBl_IP = "IP",
             Connection_TBl_Port = "Port",
-            Connection_Status_Connected = "Verbunden",
-            Connection_Status_Disconnected = "Getrennt",
+            Connection_Status_Disconnected = "Nicht verbunden",
+            Connection_Status_ClientConnecting = "Verbinden...",
+            Connection_Status_ClientConnected = "Verbunden",
+            Connection_Status_ServerConnecting = "Starten...",
+            Connection_Status_ServerOnline = "Online",
 
             PaintMenu_Clear_Tooltip = "Das Kunstwerk verwerfen",
 
             ControlMenu_Lock_Tooltip = "Für andere die Künstlerfläche (ent)sperren",
             ControlMenu_Lock_Text = "Der Host hat das Zeichenbrett für andere gesperrt!",
-            
+
             Dialog_ConnectionInfo_Infotext = "Mit diesen Daten können sich andere mit dir verbinden.",
             Dialog_ChangeConnection_InvalidIP = "Ungültige IP-Adresse",
             Dialog_ChangeConnection_InvalidPort = "Ungültiger Port",
             Dialog_ClientConnectionError_ErrorMsg = "Es konnte keine Verbindung zum Partner hergestellt werden!",
-            Dialog_ServerConnectionError_ErrorMsg = "Bitte überprüfe deine Internetverbindung!",
-            
+            Dialog_ServerConnectionError_ErrorMsg = "Keine Internetverbindung! Du bist nur im lokalen Netzwerk sichtbar!",
+
             ExitDlg_Text = "Wirklich beenden?",
             ExitDlg_Caption = "Beenden"
         };

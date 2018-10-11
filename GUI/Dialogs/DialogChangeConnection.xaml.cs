@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace GUI.Dialogs
 {
@@ -31,6 +33,7 @@ namespace GUI.Dialogs
             string invalidIP, string invalidPort, string invalidInput) : this()
         {
             Title = title;
+            Btn_Paste.Background = ImageResource.Paste;
             GroupBox_IP.Header = ipLabel;
             TB_IPAddress.Text = ip;
             GroupBox_Port.Header = portLabel;
@@ -40,7 +43,6 @@ namespace GUI.Dialogs
             this.invalidIP = invalidIP;
             this.invalidPort = invalidPort;
             this.invalidInput = invalidInput;
-
         }
 
 
@@ -51,20 +53,27 @@ namespace GUI.Dialogs
         private string invalidPort;
         private string invalidInput;
 
-        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
+
+        public void UseDispatcher(Control el, Action func)
         {
-            DialogResult = false;
-            Close();
+            el.Dispatcher.BeginInvoke(
+                DispatcherPriority.Normal,
+                new DispatcherOperationCallback(delegate
+                {
+                    func();
+                    return null;
+                }),
+                null
+            );
         }
 
         private void Btn_Connect_Click(object sender, RoutedEventArgs e)
         {
-            Regex RegexIP = new Regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.)" +
-                "{3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+            Regex RegexIP = new Regex(Constants.RegexIP);
             bool error = false;
             string errorMsg = "";
             string inputIP = TB_IPAddress.Text.ToLower();
-            if (inputIP == "localhost" || RegexIP.Match(inputIP).Success)
+            if (RegexIP.Match(inputIP).Success)
             {
                 IPAddress = inputIP;
             }
@@ -100,6 +109,54 @@ namespace GUI.Dialogs
                 DialogResult = true;
                 Close();
             }
+        }
+
+        private void Blink(Brush brush, int cnt)
+        {
+
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                for (int i = 0; i < cnt; i++)
+                {
+                    UseDispatcher(this, delegate
+                    {
+                        TB_IPAddress.Background = brush;
+                        TB_Port.Background = brush;
+                    });
+                    Thread.Sleep(100);
+                    UseDispatcher(this, delegate
+                    {
+                        TB_IPAddress.Background = Brushes.White;
+                        TB_Port.Background = Brushes.White;
+                    });
+                    Thread.Sleep(100);
+                }
+            });
+        }
+
+        private void Btn_Paste_Click(object sender, RoutedEventArgs e)
+        {
+            Regex RegexIPPort = new Regex(Constants.RegexIPPort);
+            string paste = Clipboard.GetText();
+            if (RegexIPPort.Match(paste).Success)
+            {
+                var arr = paste.Split(new char[] { ':' });
+                IPAddress = arr[0];
+                Port = int.Parse(arr[1]);
+                TB_IPAddress.Text = IPAddress;
+                TB_Port.Text = Port.ToString();
+                Blink(Brushes.LightGreen, 1);
+            }
+            else
+            {
+                Blink(Brushes.LightCoral, 2);
+            }
+        }
+
+        private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
         }
     }
 }

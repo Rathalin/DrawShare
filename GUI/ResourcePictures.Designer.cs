@@ -63,6 +63,26 @@ namespace GUI {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Copy_1000 {
+            get {
+                object obj = ResourceManager.GetObject("Copy_1000", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Copy_50 {
+            get {
+                object obj = ResourceManager.GetObject("Copy_50", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap DrawShareLogo {
             get {
                 object obj = ResourceManager.GetObject("DrawShareLogo", resourceCulture);
@@ -176,6 +196,36 @@ namespace GUI {
         internal static System.Drawing.Bitmap padlock_open3 {
             get {
                 object obj = ResourceManager.GetObject("padlock_open3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Paste_50 {
+            get {
+                object obj = ResourceManager.GetObject("Paste_50", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Paste_50_green {
+            get {
+                object obj = ResourceManager.GetObject("Paste_50_green", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Paste_50_red {
+            get {
+                object obj = ResourceManager.GetObject("Paste_50_red", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

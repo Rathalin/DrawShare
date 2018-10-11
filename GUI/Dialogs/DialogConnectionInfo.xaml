@@ -8,8 +8,9 @@
         Title="Connection" MinHeight="200" MinWidth="250" Height="210" Width="250">
     <Grid Style="{StaticResource Style_Grid_Opacity04}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1.5*"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="0.6*"></ColumnDefinition>
+            <ColumnDefinition Width="1.5*"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
@@ -18,17 +19,23 @@
             <RowDefinition Height="0.8*"></RowDefinition>
         </Grid.RowDefinitions>
         <TextBlock x:Name="TBl_Info" TextWrapping="Wrap" FontWeight="SemiBold" TextAlignment="Center" Padding="10" Text="Infotext will be here."
-                   Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,5,0,0"></TextBlock>
-        <GroupBox x:Name="GroupBox_IP_Local" Header="IP" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1">
+                   Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,5,0,0"></TextBlock>
+
+        <Button x:Name="Btn_CopyLocal" DockPanel.Dock="Right"  Grid.Column="0" Grid.Row="1" Click="Btn_Copy_Click" Tag="Local"
+                VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource Style_Button_BorderlessTransparent}"></Button>
+        <Button x:Name="Btn_CopyGlobal" DockPanel.Dock="Right"  Grid.Column="0" Grid.Row="2" Click="Btn_Copy_Click" Tag="Global"
+                VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource Style_Button_BorderlessTransparent}"></Button>
+        <GroupBox x:Name="GroupBox_IP_Local" Header="IP" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1">
             <TextBlock x:Name="TBl_IPAddress_Local" FontWeight="Bold"></TextBlock>
         </GroupBox>
-        <GroupBox x:Name="GroupBox_IP_Global" Header="IP" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2">
+
+        <GroupBox x:Name="GroupBox_IP_Global" Header="IP" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1">
             <TextBlock x:Name="TBl_IPAddress_Global" FontWeight="Bold"></TextBlock>
         </GroupBox>
-        <GroupBox x:Name="GroupBox_Port" Header="Port" MinWidth="70" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2">
+        <GroupBox x:Name="GroupBox_Port" Header="Port" MinWidth="70" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
             <TextBlock x:Name="TBl_Port" FontWeight="Bold"></TextBlock>
         </GroupBox>
         <Button x:Name="Btn_Close" Content="Close" MinWidth="80" Click="Btn_Close_Click" Margin="0,0,0,5" Grid.Row="3"
-                VerticalAlignment="Center" HorizontalAlignment="Center" Grid.ColumnSpan="2"></Button>
+                VerticalAlignment="Center" HorizontalAlignment="Center" Grid.ColumnSpan="3"></Button>
     </Grid>
 </Window>

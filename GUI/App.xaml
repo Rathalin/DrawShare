@@ -118,7 +118,7 @@
             <Setter Property="Template" Value="{DynamicResource ControlTemplate_Button_ControlPanel}"></Setter>
         </Style>
 
-        <Style x:Key="Style_Button_SocialMedia" TargetType="Button">
+        <Style x:Key="Style_Button_BorderlessTransparent" TargetType="Button">
             <Setter Property="Background" Value="Transparent"></Setter>
             <Setter Property="Margin" Value="3"></Setter>
             <Setter Property="Height" Value="30"></Setter>

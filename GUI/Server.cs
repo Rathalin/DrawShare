@@ -49,7 +49,7 @@ namespace GUI
             }
             catch (SocketException)
             {
-                mw.WriteDebug("SocketException in Server.TryPort", LogLevel.Debug);
+                mw.WriteDebug("SocketException in Server.TryPort", LogLevels.Debug);
                 return false;
             }
             return true;
@@ -62,7 +62,7 @@ namespace GUI
                 while (true)
                 {
                     Transfer<MessageContainer> transfer = new Transfer<MessageContainer>(Listener.AcceptTcpClient());
-                    mw.WriteDebug("Client connected", LogLevel.Info);
+                    mw.WriteDebug("Client connected", LogLevels.Info);
                     int transferCount;
                     lock (__lockTransfers)
                         Transfers.Add(transfer);
@@ -147,7 +147,7 @@ namespace GUI
                         catch (IOException)
                         {
                             OnClientDisconnect(transfer);
-                            mw.WriteDebug("IOException in Server.Receive in transfer.Receive", LogLevel.Debug);
+                            mw.WriteDebug("IOException in Server.Receive in transfer.Receive", LogLevels.Debug);
                         }
                     });
                     mw.UseDispatcher(mw.TBl_UserCount, delegate { mw.TBl_UserCount.Text = (transferCount).ToString(); });
@@ -157,7 +157,7 @@ namespace GUI
             {
                 if (ex.ErrorCode != 10004) //WSACancelBlockingCall
                 {
-                    mw.WriteDebug("WSACancelBlockingCall in Server.Recieve", LogLevel.Debug);
+                    mw.WriteDebug("WSACancelBlockingCall in Server.Recieve", LogLevels.Debug);
                     throw ex;
                 }
             }
@@ -172,7 +172,7 @@ namespace GUI
             catch (IOException)
             {
                 OnClientDisconnect(transfer);
-                mw.WriteDebug("IOException in Server.Send", LogLevel.Debug);
+                mw.WriteDebug("IOException in Server.Send", LogLevels.Debug);
             }
         }
 
@@ -211,7 +211,7 @@ namespace GUI
 
         public void OnClientDisconnect(Transfer<MessageContainer> t)
         {
-            mw.WriteDebug("Client disconnected", LogLevel.Info);
+            mw.WriteDebug("Client disconnected", LogLevels.Info);
             lock (__lockTransfers)
             {
                 Transfers.Remove(t);

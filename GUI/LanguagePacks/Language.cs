@@ -50,8 +50,11 @@ namespace GUI.LanguagePacks
         #region Connection
         public string Connection_TBl_IP { get; set; }
         public string Connection_TBl_Port { get; set; }
-        public string Connection_Status_Connected { get; set; }
         public string Connection_Status_Disconnected { get; set; }
+        public string Connection_Status_ClientConnecting { get; set; }
+        public string Connection_Status_ClientConnected { get; set; }
+        public string Connection_Status_ServerConnecting { get; set; }
+        public string Connection_Status_ServerOnline { get; set; }
         #endregion Connection
 
         #region PaintMenu

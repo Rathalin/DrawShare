@@ -23,6 +23,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Diagnostics;
 using static GUI.Enums;
+using System.Text.RegularExpressions;
 
 namespace GUI
 {
@@ -43,7 +44,7 @@ namespace GUI
             Translation = Languages.English;
             ToolTipService.SetShowOnDisabled(Btn_LockDrawing, true);
 
-            DebugLevel = LogLevel.NoLog;
+            DebugLevel = LogLevels.Debug;
 
             var ffArray = Fonts.SystemFontFamilies;
             foreach (FontFamily ff in ffArray)
@@ -71,8 +72,8 @@ namespace GUI
         private Point mouseLastPosition;
         private Point mouseLastEllipsePosition;
 
-        public Mode ApplicationMode { get; set; } = Mode.Undefined;
-        public LogLevel DebugLevel { get; set; } = LogLevel.Debug;
+        public Modes ApplicationMode { get; set; } = Modes.Undefined;
+        public LogLevels DebugLevel { get; set; } = LogLevels.Debug;
 
         private bool _drawingLocked;
         public bool DrawingLocked
@@ -84,9 +85,9 @@ namespace GUI
                 UseDispatcher(Btn_LockDrawing, delegate
                 {
                     if (value)
-                        Btn_LockDrawing.Background = ImageResource.PadlockClosed3;
+                        Btn_LockDrawing.Background = ImageResource.PadlockClosed;
                     else
-                        Btn_LockDrawing.Background = ImageResource.PadlockOpen3;
+                        Btn_LockDrawing.Background = ImageResource.PadlockOpen;
                 });
 
             }
@@ -123,28 +124,39 @@ namespace GUI
             }
         }
 
-        private bool _connected;
-        public bool Connected
+        private ConnectionStatus _connectionState;
+        public ConnectionStatus ConnectionState
         {
-            get { return _connected; }
+            get { return _connectionState; }
             set
             {
                 UseDispatcher(SP_Status, delegate
                 {
-                    if (value)
+                    _connectionState = value;
+                    switch (value)
                     {
-                        TBl_ConnectionStatus.Text = Translation.Connection_Status_Connected;
-                        B_ConnectionStatus.Background = Brushes.Green;
-                        //MI_Join.IsEnabled = false;
-                    }
-                    else
-                    {
-                        TBl_ConnectionStatus.Text = Translation.Connection_Status_Disconnected;
-                        B_ConnectionStatus.Background = Brushes.Red;
-                        MI_Join.IsEnabled = true;
+                        case ConnectionStatus.Disconnected:
+                            TBl_ConnectionStatus.Text = Translation.Connection_Status_Disconnected;
+                            B_ConnectionStatus.Background = Brushes.Red;
+                            break;
+                        case ConnectionStatus.ClientConnecting:
+                            TBl_ConnectionStatus.Text = Translation.Connection_Status_ClientConnecting;
+                            B_ConnectionStatus.Background = Brushes.LightBlue;
+                            break;
+                        case ConnectionStatus.ClientConnected:
+                            TBl_ConnectionStatus.Text = Translation.Connection_Status_ClientConnected;
+                            B_ConnectionStatus.Background = Brushes.LightGreen;
+                            break;
+                        case ConnectionStatus.ServerConnecting:
+                            TBl_ConnectionStatus.Text = Translation.Connection_Status_ServerConnecting;
+                            B_ConnectionStatus.Background = Brushes.Blue;
+                            break;
+                        case ConnectionStatus.ServerOnline:
+                            TBl_ConnectionStatus.Text = Translation.Connection_Status_ServerOnline;
+                            B_ConnectionStatus.Background = Brushes.Green;
+                            break;
                     }
                 });
-                _connected = value;
             }
         }
 
@@ -186,10 +198,7 @@ namespace GUI
                         MI_Join.Header = _translation.MenuBar_Join;
                         TBl_IP.Text = _translation.Connection_TBl_IP;
                         TBl_Port.Text = _translation.Connection_TBl_Port;
-                        if (Connected)
-                            TBl_ConnectionStatus.Text = _translation.Connection_Status_Connected;
-                        else
-                            TBl_ConnectionStatus.Text = _translation.Connection_Status_Disconnected;
+                        ConnectionState = _connectionState;
                         Btn_Clear.ToolTip = _translation.PaintMenu_Clear_Tooltip;
                         Btn_LockDrawing.ToolTip = _translation.ControlMenu_Lock_Tooltip;
                         if (TBl_ControlPanel.Text != "")
@@ -206,15 +215,14 @@ namespace GUI
         private void InitImages()
         {
             //Icon
-            Icon = ImageResource.DrawShareLogo1;
+            Icon = ImageResource.DrawShareLogo;
 
             //Usericon
             Label_UserCount.Background = ImageResource.UserCount;
 
             //Clear
-            Btn_Clear.Background = ImageResource.Trash1_Small;
-
-
+            Btn_Clear.Background = ImageResource.Trash;
+            
             //Twitter
             Btn_Twitter.Background = ImageResource.LogoTwitter;
             //Github
@@ -302,19 +310,19 @@ namespace GUI
             }
             catch (ResourceReferenceKeyNotFoundException)
             {
-                WriteDebug("ResourceReferenceKeyNotFoundException in SetTheme", LogLevel.Error);
+                WriteDebug("ResourceReferenceKeyNotFoundException in SetTheme", LogLevels.Error);
             }
         }
 
         private void Send(MessageContainer msg)
         {
-            if (ApplicationMode == Mode.Server)
+            if (ApplicationMode == Modes.Server)
                 server.SendAll(msg);
-            else if (ApplicationMode == Mode.Client)
+            else if (ApplicationMode == Modes.Client)
                 client.Send(msg);
         }
 
-        public void WriteDebug(string text, LogLevel loglvl)
+        public void WriteDebug(string text, LogLevels loglvl)
         {
             if (loglvl <= DebugLevel)
             {
@@ -389,7 +397,7 @@ namespace GUI
                 if (m as DrawData != null)
                 {
                     DrawData drawData = (DrawData)m;
-                    if (ApplicationMode == Mode.Server)
+                    if (ApplicationMode == Modes.Server)
                     {
                         server.SendAll(drawData);
                     }
@@ -405,12 +413,12 @@ namespace GUI
                     {
                         Canvas_Drawing.Children.Clear();
                     });
-                    if (ApplicationMode == Mode.Server)
+                    if (ApplicationMode == Modes.Server)
                         server.SendAll(m);
                 }
 
                 //Client only receives
-                else if (ApplicationMode == Mode.Client)
+                else if (ApplicationMode == Modes.Client)
                 {
                     if (m as UserCount != null)
                     {
@@ -432,12 +440,12 @@ namespace GUI
                     else if (m as DrawDataBlockFlag != null)
                     {
                         StartLoading();
-                        UseDispatcher(TBl_ControlPanel, delegate { WriteDebug("DrawDataBlock Flag", LogLevel.Debug); });
+                        UseDispatcher(TBl_ControlPanel, delegate { WriteDebug("DrawDataBlock Flag", LogLevels.Debug); });
                     }
                     else if (m as DrawDataBlock != null)
                     {
                         DrawDataBlock drawDataBlock = (DrawDataBlock)m;
-                        if (ApplicationMode == Mode.Server)
+                        if (ApplicationMode == Modes.Server)
                         {
                             server.SendAll(drawDataBlock);
                         }
@@ -448,7 +456,7 @@ namespace GUI
                                 Draw(Canvas_Drawing,
                                     new CustomBrush(drawDataBlock.Color, drawDataBlock.Thickness), line.X1, line.Y1, line.X2, line.Y2);
                         });
-                        UseDispatcher(TBl_ControlPanel, delegate { WriteDebug("DrawDataBlock", LogLevel.Debug); });
+                        UseDispatcher(TBl_ControlPanel, delegate { WriteDebug("DrawDataBlock", LogLevels.Debug); });
                     }
                     else if (m as ServerDisconnect != null)
                     {
@@ -457,7 +465,7 @@ namespace GUI
                 }
 
                 //Server only receives
-                else if (ApplicationMode == Mode.Server)
+                else if (ApplicationMode == Modes.Server)
                 {
                     if (m as ClientDisconnect != null)
                     {
@@ -477,10 +485,10 @@ namespace GUI
 
         public void ResetConnectionBar()
         {
-            if (ApplicationMode != Mode.Undefined)
+            if (ApplicationMode != Modes.Undefined)
             {
-                ApplicationMode = Mode.Undefined;
-                Connected = false;
+                ApplicationMode = Modes.Undefined;
+                ConnectionState = ConnectionStatus.Disconnected;
                 IP = "";
                 Port = 0;
                 UserCount = 1;
@@ -548,7 +556,7 @@ namespace GUI
                 else
                 {
                     Draw(Canvas_Drawing, CustomBrush, mouseLastPosition.X, mouseLastPosition.Y, position.X, position.Y);
-                    if (Connected)
+                    if (ConnectionState == ConnectionStatus.ClientConnected || ConnectionState == ConnectionStatus.ServerOnline)
                     {
                         Send(new MessageContainer(
                             new DrawData(mouseLastPosition.X, mouseLastPosition.Y, position.X, position.Y, CustomBrush.Thickness, CustomBrush.ColorBrush.ToString())
@@ -593,11 +601,11 @@ namespace GUI
         private void Btn_Clear_Click(object sender, RoutedEventArgs e)
         {
             Canvas_Drawing.Children.Clear();
-            if (ApplicationMode == Mode.Server)
+            if (ApplicationMode == Modes.Server)
             {
                 server.SendAll(new DrawClear());
             }
-            else if (ApplicationMode == Mode.Client && !DrawingLocked)
+            else if (ApplicationMode == Modes.Client && ConnectionState == ConnectionStatus.ClientConnected && !DrawingLocked)
             {
                 client.Send(new DrawClear());
             }
@@ -610,11 +618,11 @@ namespace GUI
                 Button btn = (Button)sender;
                 Shape shape = (Shape)btn.Content;
                 CustomBrush.Thickness = (double)shape.GetValue(HeightProperty);
-                WriteDebug("CUstomBrush.Thickness: " + CustomBrush.Thickness.ToString(), LogLevel.Debug);
+                WriteDebug("CustomBrush.Thickness: " + CustomBrush.Thickness.ToString(), LogLevels.Debug);
             }
             catch (InvalidCastException)
             {
-                WriteDebug("InvalidCastException in Btn_Thickness_Click", LogLevel.Debug);
+                WriteDebug("InvalidCastException in Btn_Thickness_Click", LogLevels.Debug);
             }
         }
 
@@ -627,7 +635,7 @@ namespace GUI
             }
             catch (InvalidCastException)
             {
-                WriteDebug("InvalidCastException in Btn_ColorPicker_Click", LogLevel.Debug);
+                WriteDebug("InvalidCastException in Btn_ColorPicker_Click", LogLevels.Debug);
             }
         }
 
@@ -639,35 +647,44 @@ namespace GUI
             ResetConnectionBar();
             Btn_LockDrawing.IsEnabled = false;
             DialogChangeConnection dlg = new DialogChangeConnection(
-                Translation.General_Connection, Translation.General_IP, "10.0.0.1",
+                Translation.General_Connection, Translation.General_IP, "",
                 Translation.General_Port, startport, Translation.General_Cancel, Translation.General_Connect,
                 Translation.Dialog_ChangeConnection_InvalidIP, Translation.Dialog_ChangeConnection_InvalidPort, Translation.General_InvalidInput);
             dlg.Owner = this;
             if (dlg.ShowDialog() == true)
             {
-                ApplicationMode = Mode.Client;
+                ApplicationMode = Modes.Client;
                 client = new Client(this, dlg.IPAddress, dlg.Port);
                 ThreadPool.QueueUserWorkItem(delegate
                 {
+                    ConnectionState = ConnectionStatus.ClientConnecting;
+                    UseDispatcher(MI_Join, delegate
+                    {
+                        MI_Join.IsEnabled = false;
+                        MI_Share.IsEnabled = false;
+                        IP = dlg.IPAddress;
+                        Port = dlg.Port;
+                    });
                     if (client.TryConnect())
                     {
                         ThreadPool.QueueUserWorkItem(delegate { client.Connect(); });
                         UseDispatcher(this, delegate
                         {
-                            //Title = "DrawShare - Client";
-                            IP = dlg.IPAddress;
-                            Port = dlg.Port;
-                            Connected = true;
+                            ConnectionState = ConnectionStatus.ClientConnected;
                             Canvas_Drawing.Children.Clear();
+                            MI_Join.IsEnabled = true;
+                            MI_Share.IsEnabled = true;
                         });
                     }
                     else
                     {
                         UseDispatcher(this, delegate
                         {
-                            MessageBox.Show(this, Translation.Dialog_ClientConnectionError_ErrorMsg, Translation.General_Error,
-                                MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.No, MessageBoxOptions.None);
                             ResetConnectionBar();
+                            MI_Join.IsEnabled = true;
+                            MI_Share.IsEnabled = true;
+                            MessageBox.Show(this, Translation.Dialog_ClientConnectionError_ErrorMsg, Translation.General_Error,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.No, MessageBoxOptions.None);
                         });
                     }
                 });
@@ -683,14 +700,18 @@ namespace GUI
             //ResetConnections();
             if (client != null)
                 client.Stop();
-            try
+
+            ThreadPool.QueueUserWorkItem(delegate
             {
-                string localIP = GetLocalIPAddress();
-                string globalIP = GetGlobalIPAddress();
-                int port = startport;
-                if (ApplicationMode != Mode.Server)
+                UseDispatcher(MI_Join, delegate
                 {
-                    //Title = "DrawShare - Server";
+                    MI_Join.IsEnabled = false;
+                    MI_Share.IsEnabled = false;
+                    ConnectionState = ConnectionStatus.ServerConnecting;
+                });
+                int port = startport;
+                if (ApplicationMode != Modes.Server)
+                {
                     server = new Server(this);
                     while (!server.TryPort(port))
                     {
@@ -700,31 +721,51 @@ namespace GUI
                             port++;
                     }
                     ThreadPool.QueueUserWorkItem(delegate { server.Receive(); });
-                    UseDispatcher(this, DispatcherPriority.Background, delegate
-                    {
-                        Connected = true;
-                        Btn_LockDrawing.IsEnabled = true;
-                        IP = globalIP;
-                        Port = port;
-                    });
                 }
-                DialogConnectionInfo dlg = new DialogConnectionInfo(
-                    Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
-                    Translation.General_IP, localIP, globalIP, Translation.General_Port, port, Translation.General_Close);
-                dlg.Owner = this;
-                dlg.Show();
-                ApplicationMode = Mode.Server;
-            }
-            catch (WebException)
-            {
-                MessageBox.Show(Translation.Dialog_ServerConnectionError_ErrorMsg, Translation.General_Error, MessageBoxButton.OK, MessageBoxImage.Error);
-                WriteDebug("WebException in MenuItem_Share_Click", LogLevel.Error);
-            }
+                string localIP = GetLocalIPAddress();
+                string globalIP = "";
+                bool localOnly = false;
+                try
+                {
+                    globalIP = GetGlobalIPAddress();
+                }
+                catch (WebException)
+                {
+                    localOnly = true;
+                    WriteDebug("WebException in MenuItem_Share_Click", LogLevels.Error);
+                }
+                if (localOnly)
+                    MessageBox.Show(Translation.Dialog_ServerConnectionError_ErrorMsg, Translation.General_Error, MessageBoxButton.OK, MessageBoxImage.Warning);
+                UseDispatcher(this, delegate
+                {
+                    ConnectionState = ConnectionStatus.ServerOnline;
+                    Btn_LockDrawing.IsEnabled = true;
+                    Regex RegIP = new Regex(Constants.RegexIP);
+                    if (RegIP.Match(globalIP).Success)
+                    {
+                        IP = globalIP;
+                    }
+                    else
+                    {
+                        IP = localIP;
+                        globalIP = Translation.Connection_Status_Disconnected;
+                    }
+                    Port = port;
+                    MI_Join.IsEnabled = true;
+                    MI_Share.IsEnabled = true;
+                    DialogConnectionInfo dlg = new DialogConnectionInfo(
+                        Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
+                        Translation.General_IP, localIP, globalIP, Translation.General_Port, port, Translation.General_Close);
+                    dlg.Owner = this;
+                    dlg.ShowDialog();
+                    ApplicationMode = Modes.Server;
+                });
+            });
         }
 
         private void Btn_LockDrawing_Click(object sender, RoutedEventArgs e)
         {
-            if (ApplicationMode == Mode.Server)
+            if (ApplicationMode == Modes.Server)
             {
                 if (DrawingLocked)
                     server.SendAll(new DrawUnlock());
@@ -747,6 +788,11 @@ namespace GUI
         private void MI_Theme_GreenBlue_Click(object sender, RoutedEventArgs e)
         {
             SetTheme(Colors.LightGreen, Colors.LightBlue, Colors.Green, Colors.DarkBlue);
+        }
+
+        private void MI_Theme_Test_Click(object sender, RoutedEventArgs e)
+        {
+            SetTheme(Colors.LightYellow, Colors.Wheat, Colors.Yellow, Colors.LightYellow);
         }
 
         private void MI_Language_English_Click(object sender, RoutedEventArgs e)
@@ -772,9 +818,9 @@ namespace GUI
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (ApplicationMode == Mode.Client && client != null)
+            if (ApplicationMode == Modes.Client && client != null)
                 client.Stop();
-            else if (ApplicationMode == Mode.Server && server != null)
+            else if (ApplicationMode == Modes.Server && server != null)
                 server.Stop();
 
             CleanUp();

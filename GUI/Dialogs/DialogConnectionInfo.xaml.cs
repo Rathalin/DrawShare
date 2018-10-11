@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,6 +25,8 @@ namespace GUI.Dialogs
         {
             InitializeComponent();
             Icon = ImageResource.DrawShareLogo1;
+            Btn_CopyLocal.Background = ImageResource.Copy;
+            Btn_CopyGlobal.Background = ImageResource.Copy;
         }
 
         public DialogConnectionInfo(string title, string infoText, string ipLabel, string ipaddressLocal, string ipaddressGlobal, string portLabel, int port, string closeText) : this()
@@ -42,6 +45,21 @@ namespace GUI.Dialogs
         private void Btn_Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void Btn_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = (Button)sender;
+            string ip = "";
+            if (btn.Tag.ToString() == "Global")
+                ip = TBl_IPAddress_Global.Text;
+            else if (btn.Tag.ToString() == "Local")
+                ip = TBl_IPAddress_Local.Text;
+            Regex RegexIPPort = new Regex(Constants.RegexIPPort);
+            if (RegexIPPort.Match(ip + ":" + TBl_Port).Success)
+            {
+                Clipboard.SetText(ip + ":" + TBl_Port.Text);
+            }
         }
     }
 }
