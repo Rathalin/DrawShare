@@ -19,6 +19,8 @@ namespace GUI.LanguagePacks
             General_IP = "IP",
             General_Port = "Port",
             General_InvalidInput = "Invalid Input",
+            General_Paste = "Paste",
+            General_Copy = "Copy",
 
             MenuBar_Menu = "Menu",
 
@@ -71,6 +73,8 @@ namespace GUI.LanguagePacks
             General_IP = "IP-Adresse",
             General_Port = "Port",
             General_InvalidInput = "Ungültige Eingabe",
+            General_Paste = "Einfügen",
+            General_Copy = "Kopieren",
 
             MenuBar_Menu = "Menü",
 

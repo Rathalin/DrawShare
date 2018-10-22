@@ -24,12 +24,13 @@ namespace GUI.Dialogs
         public DialogConnectionInfo()
         {
             InitializeComponent();
-            Icon = ImageResource.DrawShareLogo1;
+            Icon = ImageResource.DrawShareLogo;
             Btn_CopyLocal.Background = ImageResource.Copy;
             Btn_CopyGlobal.Background = ImageResource.Copy;
         }
 
-        public DialogConnectionInfo(string title, string infoText, string ipLabel, string ipaddressLocal, string ipaddressGlobal, string portLabel, int port, string closeText) : this()
+        public DialogConnectionInfo(string title, string infoText, string ipLabel, string ipaddressLocal, string ipaddressGlobal,
+            string portLabel, int port, string copyText, string closeText) : this()
         {
             Title = title;
             TBl_Info.Text = infoText;
@@ -40,6 +41,8 @@ namespace GUI.Dialogs
             GroupBox_Port.Header = portLabel;
             TBl_Port.Text = port.ToString();
             Btn_Close.Content = closeText;
+            Btn_CopyLocal.ToolTip = copyText;
+            Btn_CopyGlobal.ToolTip = copyText;
         }
 
         private void Btn_Close_Click(object sender, RoutedEventArgs e)
@@ -56,7 +59,7 @@ namespace GUI.Dialogs
             else if (btn.Tag.ToString() == "Local")
                 ip = TBl_IPAddress_Local.Text;
             Regex RegexIPPort = new Regex(Constants.RegexIPPort);
-            if (RegexIPPort.Match(ip + ":" + TBl_Port).Success)
+            if (RegexIPPort.Match(ip + ":" + TBl_Port.Text).Success)
             {
                 Clipboard.SetText(ip + ":" + TBl_Port.Text);
             }

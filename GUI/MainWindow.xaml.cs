@@ -222,7 +222,7 @@ namespace GUI
 
             //Clear
             Btn_Clear.Background = ImageResource.Trash;
-            
+
             //Twitter
             Btn_Twitter.Background = ImageResource.LogoTwitter;
             //Github
@@ -291,7 +291,19 @@ namespace GUI
 
         public static string GetGlobalIPAddress()
         {
-            return new WebClient().DownloadString("http://icanhazip.com").Trim();
+            string ip = "";
+            string response = new WebClient().DownloadString(Constants.DNS_GetIP_URI).Trim();
+            Regex reg = new Regex(Constants.RegexIP);
+            Match match = reg.Match(response);
+            if (match.Success)
+            {
+                ip = match.Value;
+            }
+            else
+            {
+                throw new Exception("Failed to parse Web Response of " + Constants.DNS_GetIP_URI);
+            }
+            return ip;
         }
 
         public void OpenURI(string uri)
@@ -485,14 +497,11 @@ namespace GUI
 
         public void ResetConnectionBar()
         {
-            if (ApplicationMode != Modes.Undefined)
-            {
-                ApplicationMode = Modes.Undefined;
-                ConnectionState = ConnectionStatus.Disconnected;
-                IP = "";
-                Port = 0;
-                UserCount = 1;
-            }
+            ApplicationMode = Modes.Undefined;
+            ConnectionState = ConnectionStatus.Disconnected;
+            IP = "";
+            Port = 0;
+            UserCount = 1;
         }
 
         #endregion Methodes
@@ -648,7 +657,7 @@ namespace GUI
             Btn_LockDrawing.IsEnabled = false;
             DialogChangeConnection dlg = new DialogChangeConnection(
                 Translation.General_Connection, Translation.General_IP, "",
-                Translation.General_Port, startport, Translation.General_Cancel, Translation.General_Connect,
+                Translation.General_Port, startport, Translation.General_Cancel, Translation.General_Connect, Translation.General_Paste,
                 Translation.Dialog_ChangeConnection_InvalidIP, Translation.Dialog_ChangeConnection_InvalidPort, Translation.General_InvalidInput);
             dlg.Owner = this;
             if (dlg.ShowDialog() == true)
@@ -755,7 +764,8 @@ namespace GUI
                     MI_Share.IsEnabled = true;
                     DialogConnectionInfo dlg = new DialogConnectionInfo(
                         Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
-                        Translation.General_IP, localIP, globalIP, Translation.General_Port, port, Translation.General_Close);
+                        Translation.General_IP, localIP, globalIP, Translation.General_Port, port,
+                        Translation.General_Copy, Translation.General_Close);
                     dlg.Owner = this;
                     dlg.ShowDialog();
                     ApplicationMode = Modes.Server;

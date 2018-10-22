@@ -13,9 +13,11 @@ namespace GUI.LanguagePacks
         public string General_Close { get; set; }
         public string General_Connect { get; set; }
         public string General_Connection { get; set; }
+        public string General_Copy { get; set; }
         public string General_Error { get; set; }
         public string General_IP { get; set; }
         public string General_Port { get; set; }
+        public string General_Paste { get; set; }
         public string General_InvalidInput { get; set; }
         #endregion General
 

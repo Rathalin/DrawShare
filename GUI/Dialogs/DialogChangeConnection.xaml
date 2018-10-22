@@ -33,7 +33,7 @@
             </Grid.ColumnDefinitions>
             <Button x:Name="Btn_Cancel" Content="Cancel" MinWidth="80" Click="Btn_Cancel_Click" IsCancel="True"
                 Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"></Button>
-            <Button x:Name="Btn_Paste" Grid.Column="1" Style="{StaticResource Style_Button_BorderlessTransparent}" Height="30" Width="30" Click="Btn_Paste_Click"></Button>
+            <Button x:Name="Btn_Paste" Grid.Column="1" Style="{StaticResource Style_Button_BorderlessTransparent}" Height="30" Width="30" Click="Btn_Paste_Click" ToolTip="Paste"></Button>
             <Button x:Name="Btn_Connect" Content="Connect" MinWidth="80" Click="Btn_Connect_Click" IsDefault="True"
                 Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center"></Button>
         </Grid>

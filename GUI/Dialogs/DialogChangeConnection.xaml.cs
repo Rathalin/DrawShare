@@ -26,11 +26,11 @@ namespace GUI.Dialogs
         public DialogChangeConnection()
         {
             InitializeComponent();
-            Icon = ImageResource.DrawShareLogo1;
+            Icon = ImageResource.DrawShareLogo;
         }
 
         public DialogChangeConnection(string title, string ipLabel, string ip, string portLabel, int port, string cancelText, string connectText,
-            string invalidIP, string invalidPort, string invalidInput) : this()
+            string pasteText, string invalidIP, string invalidPort, string invalidInput) : this()
         {
             Title = title;
             Btn_Paste.Background = ImageResource.Paste;
@@ -40,6 +40,7 @@ namespace GUI.Dialogs
             TB_Port.Text = port.ToString();
             Btn_Cancel.Content = cancelText;
             Btn_Connect.Content = connectText;
+            Btn_Paste.ToolTip = pasteText;
             this.invalidIP = invalidIP;
             this.invalidPort = invalidPort;
             this.invalidInput = invalidInput;
@@ -54,6 +55,25 @@ namespace GUI.Dialogs
         private string invalidInput;
 
 
+        public void Paste()
+        {
+            Regex RegexIPPort = new Regex(Constants.RegexIPPort);
+            string paste = Clipboard.GetText();
+            if (RegexIPPort.Match(paste).Success)
+            {
+                var arr = paste.Split(new char[] { ':' });
+                IPAddress = arr[0];
+                Port = int.Parse(arr[1]);
+                TB_IPAddress.Text = IPAddress;
+                TB_Port.Text = Port.ToString();
+                Blink(Brushes.LightGreen, 1);
+            }
+            else
+            {
+                Blink(Brushes.LightCoral, 2);
+            }
+        }
+
         public void UseDispatcher(Control el, Action func)
         {
             el.Dispatcher.BeginInvoke(
@@ -66,6 +86,7 @@ namespace GUI.Dialogs
                 null
             );
         }
+
 
         private void Btn_Connect_Click(object sender, RoutedEventArgs e)
         {
@@ -129,28 +150,15 @@ namespace GUI.Dialogs
                         TB_IPAddress.Background = Brushes.White;
                         TB_Port.Background = Brushes.White;
                     });
-                    Thread.Sleep(100);
+                    if (i + 1 < cnt)
+                        Thread.Sleep(100);
                 }
             });
         }
 
         private void Btn_Paste_Click(object sender, RoutedEventArgs e)
         {
-            Regex RegexIPPort = new Regex(Constants.RegexIPPort);
-            string paste = Clipboard.GetText();
-            if (RegexIPPort.Match(paste).Success)
-            {
-                var arr = paste.Split(new char[] { ':' });
-                IPAddress = arr[0];
-                Port = int.Parse(arr[1]);
-                TB_IPAddress.Text = IPAddress;
-                TB_Port.Text = Port.ToString();
-                Blink(Brushes.LightGreen, 1);
-            }
-            else
-            {
-                Blink(Brushes.LightCoral, 2);
-            }
+            Paste();
         }
 
         private void Btn_Cancel_Click(object sender, RoutedEventArgs e)
