@@ -8,7 +8,7 @@ The idea came to my mind when i was talking to friends online: one of them tried
 
 ## Ussage :wrench:
 
-To start DrawShare simply download the exe-file and open it (https://github.com/Rhatalin/DrawShare/releases).
+To start DrawShare simply download the exe-file [here](https://github.com/Rhatalin/DrawShare/releases) and open it.
 To connect with others one person needs to **share** his drawing board and then others can **join**.
 
 * Share Mode: You become the host and friends can join via the shown ipaddress and port.
