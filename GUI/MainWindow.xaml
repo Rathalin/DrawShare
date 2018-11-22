@@ -45,11 +45,11 @@
         <DockPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <DockPanel DockPanel.Dock="Bottom">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                    <Button x:Name="Btn_Github" Style="{DynamicResource Style_Button_BorderlessTransparent}" Click="Btn_SocialMedia_Click"></Button>
-                    <Button x:Name="Btn_Twitter" Style="{DynamicResource Style_Button_BorderlessTransparent}" Click="Btn_SocialMedia_Click"></Button>
+                    <Button x:Name="Btn_Github" Style="{DynamicResource Style_Button_BorderlessTransparent}" Click="Btn_SocialMedia_Click" Background="LightGray"></Button>
+                    <Button x:Name="Btn_Twitter" Style="{DynamicResource Style_Button_BorderlessTransparent}" Click="Btn_SocialMedia_Click" Background="LightBlue"></Button>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="40">
-                    <Button x:Name="Btn_LockDrawing" Style="{StaticResource Style_Button_ControlPanel}" Click="Btn_LockDrawing_Click"></Button>
+                    <Button x:Name="Btn_LockDrawing" Style="{StaticResource Style_Button_ControlPanel}" Click="Btn_LockDrawing_Click" Background="Gold"></Button>
                     <TextBlock x:Name="TBl_ControlPanel" Style="{DynamicResource Style_TextBlock_ControlPanel}" Foreground="Black"></TextBlock>
                     <TextBlock x:Name="TBl_Debug" Style="{DynamicResource Style_TextBlock_ControlPanel}"></TextBlock>
                 </StackPanel>

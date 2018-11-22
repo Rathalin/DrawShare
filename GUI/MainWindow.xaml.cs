@@ -45,9 +45,8 @@ namespace GUI
             ToolTipService.SetShowOnDisabled(Btn_LockDrawing, true);
 
             DebugLevel = LogLevels.Debug;
-
-            var ffArray = Fonts.SystemFontFamilies;
-            foreach (FontFamily ff in ffArray)
+            
+            foreach (FontFamily ff in Fonts.SystemFontFamilies)
             {
                 InstalledFontFamilies.Add(ff.ToString());
             }
@@ -718,9 +717,9 @@ namespace GUI
                     MI_Share.IsEnabled = false;
                     ConnectionState = ConnectionStatus.ServerConnecting;
                 });
-                int port = startport;
                 if (ApplicationMode != Modes.Server)
                 {
+                    int port = startport;
                     server = new Server(this);
                     while (!server.TryPort(port))
                     {
@@ -729,6 +728,7 @@ namespace GUI
                         else
                             port++;
                     }
+                    Port = port;
                     ThreadPool.QueueUserWorkItem(delegate { server.Receive(); });
                 }
                 string localIP = GetLocalIPAddress();
@@ -759,12 +759,11 @@ namespace GUI
                         IP = localIP;
                         globalIP = Translation.Connection_Status_Disconnected;
                     }
-                    Port = port;
                     MI_Join.IsEnabled = true;
                     MI_Share.IsEnabled = true;
                     DialogConnectionInfo dlg = new DialogConnectionInfo(
                         Translation.General_Connection, Translation.Dialog_ConnectionInfo_Infotext,
-                        Translation.General_IP, localIP, globalIP, Translation.General_Port, port,
+                        Translation.General_IP, localIP, globalIP, Translation.General_Port, Port,
                         Translation.General_Copy, Translation.General_Close);
                     dlg.Owner = this;
                     dlg.ShowDialog();
@@ -801,8 +800,8 @@ namespace GUI
         }
 
         private void MI_Theme_Test_Click(object sender, RoutedEventArgs e)
-        {
-            SetTheme(Colors.LightYellow, Colors.Wheat, Colors.Yellow, Colors.LightYellow);
+        { 
+            SetTheme(Colors.Gray, Colors.WhiteSmoke, Colors.Red, Colors.DarkRed);
         }
 
         private void MI_Language_English_Click(object sender, RoutedEventArgs e)
