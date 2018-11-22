@@ -4,14 +4,14 @@ DrawShare lets you connect with others so you can draw together :paintbrush:
 
 ## Idea :bulb: 
 
-The idea came to my mind when i was talking to friends online: one of them tried to explain a situation and i thought *"wouldn't it be funny if he would quickly draw what happend?"*. I realised i didn't know an application that could do that so i started working on this little program. No matter if you plan to visually support your explanations or just want to have fun, you may want to give it a try!
+The idea came to my mind when I was talking to friends online: one of them tried to explain a situation and I thought *"wouldn't it be funny if he would quickly draw what happend?"*. I realised I didn't know an application that could do that so I started working on this little program. No matter if you plan to visually support your explanations or just want to have fun, you may want to give it a try!
 
-## Ussage :wrench:
+## Usage :wrench:
 
 To start DrawShare simply download the exe-file [here](https://github.com/Rhatalin/DrawShare/releases) and open it.
 To connect with others one person needs to **share** his drawing board and then others can **join**.
 
-* Share Mode: You become the host and friends can join via the shown ipaddress and port.
+* Share Mode: You become the host and friends can join via the shown ip address and port.
 * Join Mode: You can assist your friend by typing in his data (ip and port).
 
 ### Local Network
