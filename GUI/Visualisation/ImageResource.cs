@@ -38,12 +38,12 @@ namespace GUI.Visualisation
 
         #endregion Images
 
-        #region Funktions
+        #region Functions
         public static BitmapSource LoadBitmap(System.Drawing.Bitmap source)
         {
             return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(source.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty,
                    BitmapSizeOptions.FromEmptyOptions());
         }
-        #endregion Funktions
+        #endregion Functions
     }
 }

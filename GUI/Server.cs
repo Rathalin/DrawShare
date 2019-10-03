@@ -49,7 +49,7 @@ namespace GUI
             }
             catch (SocketException)
             {
-                mw.WriteDebug("SocketException in Server.TryPort", LogLevels.Debug);
+                mw.WriteDebug("SocketException in Server.TryPort", LogLevels.NoLog);
                 return false;
             }
             return true;

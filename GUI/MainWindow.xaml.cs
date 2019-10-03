@@ -44,8 +44,8 @@ namespace GUI
             Translation = Languages.English;
             ToolTipService.SetShowOnDisabled(Btn_LockDrawing, true);
 
-            DebugLevel = LogLevels.Debug;
-            
+            DebugLevel = LogLevels.NoLog;
+
             foreach (FontFamily ff in Fonts.SystemFontFamilies)
             {
                 InstalledFontFamilies.Add(ff.ToString());
@@ -63,7 +63,7 @@ namespace GUI
 
         private Server server;
         private Client client;
-        private int startport = 50000;
+        private const int startport = 50000;
 
         private CustomBrush CustomBrush = new CustomBrush(Brushes.Black, 2);
 
@@ -438,14 +438,14 @@ namespace GUI
                     }
                     else if (m as DrawLock != null)
                     {
+                        UseDispatcher(SP_Board, DispatcherPriority.Send, delegate { SP_Board.IsEnabled = false; });
                         DrawingLocked = true;
-                        UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = false; });
                         UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = Translation.ControlMenu_Lock_Text; });
                     }
                     else if (m as DrawUnlock != null)
                     {
+                        UseDispatcher(SP_Board, DispatcherPriority.Send, delegate { SP_Board.IsEnabled = true; });
                         DrawingLocked = false;
-                        UseDispatcher(SP_Board, delegate { SP_Board.IsEnabled = true; });
                         UseDispatcher(TBl_ControlPanel, delegate { TBl_ControlPanel.Text = string.Empty; });
                     }
                     else if (m as DrawDataBlockFlag != null)
@@ -686,7 +686,7 @@ namespace GUI
                     }
                     else
                     {
-                        UseDispatcher(this, delegate
+                        UseDispatcher(this, DispatcherPriority.Send, delegate
                         {
                             ResetConnectionBar();
                             MI_Join.IsEnabled = true;
@@ -745,7 +745,7 @@ namespace GUI
                 }
                 if (localOnly)
                     MessageBox.Show(Translation.Dialog_ServerConnectionError_ErrorMsg, Translation.General_Error, MessageBoxButton.OK, MessageBoxImage.Warning);
-                UseDispatcher(this, delegate
+                UseDispatcher(this, DispatcherPriority.ApplicationIdle, delegate
                 {
                     ConnectionState = ConnectionStatus.ServerOnline;
                     Btn_LockDrawing.IsEnabled = true;
@@ -774,14 +774,17 @@ namespace GUI
 
         private void Btn_LockDrawing_Click(object sender, RoutedEventArgs e)
         {
-            if (ApplicationMode == Modes.Server)
+            ThreadPool.QueueUserWorkItem(delegate
             {
-                if (DrawingLocked)
-                    server.SendAll(new DrawUnlock());
-                else
-                    server.SendAll(new DrawLock());
-            }
-            DrawingLocked = !DrawingLocked;
+                if (ApplicationMode == Modes.Server)
+                {
+                    if (DrawingLocked)
+                        server.SendAll(new DrawUnlock());
+                    else
+                        server.SendAll(new DrawLock());
+                }
+                UseDispatcher(this, () => DrawingLocked = !DrawingLocked);
+            });
         }
 
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
@@ -797,11 +800,6 @@ namespace GUI
         private void MI_Theme_GreenBlue_Click(object sender, RoutedEventArgs e)
         {
             SetTheme(Colors.LightGreen, Colors.LightBlue, Colors.Green, Colors.DarkBlue);
-        }
-
-        private void MI_Theme_Test_Click(object sender, RoutedEventArgs e)
-        { 
-            SetTheme(Colors.Gray, Colors.WhiteSmoke, Colors.Red, Colors.DarkRed);
         }
 
         private void MI_Language_English_Click(object sender, RoutedEventArgs e)
@@ -840,6 +838,20 @@ namespace GUI
                 e.Cancel = true;
             }
             */
+        }
+
+        private void MI_Debug_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (MenuItem)sender;
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                Thread.Sleep(1000 * 2);
+                UseDispatcher(SP_Board, delegate
+                {
+                    DrawingLocked = true;
+                    SP_Board.IsEnabled = false;
+                });
+            });
         }
     }
     #endregion GUI-Methodes

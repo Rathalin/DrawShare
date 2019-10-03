@@ -28,7 +28,6 @@
                         <MenuItem x:Name="MI_Theme" Header="Theme">
                             <MenuItem x:Name="MI_Theme_Classic" Header="Classic" Click="MI_Theme_Classic_Click"></MenuItem>
                             <MenuItem x:Name="MI_Theme_GreenBlue" Header="GreenBlue" Click="MI_Theme_GreenBlue_Click"></MenuItem>
-                            <MenuItem x:Name="MI_Theme_Test" Header="Test" Click="MI_Theme_Test_Click"></MenuItem>
                         </MenuItem>
                         <MenuItem x:Name="MI_Language" Header="Language">
                             <MenuItem x:Name="MI_Language_English" Header="Engish" Click="MI_Language_English_Click"></MenuItem>
@@ -39,6 +38,7 @@
                     </MenuItem>
                     <MenuItem x:Name="MI_Share" Header="Share" Click="MenuItem_Share_Click"></MenuItem>
                     <MenuItem x:Name="MI_Join" Header="Join" Click="MenuItem_Join_Click"></MenuItem>
+                    <MenuItem x:Name="MI_Debug" Header="DisableBoardIn5" Tag="5" Click="MI_Debug_Click"></MenuItem>
                 </Menu>
             </DockPanel>
         </Border>
