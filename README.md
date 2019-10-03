@@ -6,6 +6,8 @@ DrawShare lets you connect with others so you can draw together :paintbrush:
 
 The idea came to my mind when I was talking to friends online: one of them tried to explain a situation and I thought *"wouldn't it be funny if he would quickly draw what happend?"*. I realised I didn't know an application that could do that so I started working on this little program. No matter if you plan to visually support your explanations or just want to have fun, you may want to give it a try!
 
+![demo](https://github.com/Rhatalin/DrawShare/blob/master/GUI/Resources/Screenshot_Tree.PNG)
+
 ## Usage :wrench:
 
 To start DrawShare simply download the exe-file [here](https://github.com/Rhatalin/DrawShare/releases) and open it.
@@ -18,7 +20,7 @@ To connect with others one person needs to **share** his drawing board and then 
 
 Using the program in your local network is very easy as explained above.
 
-### Global Network (also called THE INTERNET)
+### Global Network (also called the internet)
 
 To use the program with others that are not in your local network an extra step is needed: Port Forwarding. Every router interface is different but this may help you:
 
@@ -28,7 +30,7 @@ To use the program with others that are not in your local network an extra step 
 
     - Protocol: TCP
     - WAN Host IP: 0.0.0.0
-    - LAN Host IP Address: \<**local** ipv4 address of your computer>
+    - LAN Host IP Address: \<local ipv4 address of your computer>
     - WAN Port: \<port>
     - LAN Host Port: \<port>
   
@@ -38,4 +40,4 @@ To use the program with others that are not in your local network an extra step 
   WAN Host IP Range: 0.0.0.0 ~ 0.0.0.0
   
 I hope the set up wasn't to complicated and you can start drawing.
-For help just ask me on twitter (https://twitter.com/Rhatalin)
+For help just ask me on [twitter](https://twitter.com/Rhatalin)
